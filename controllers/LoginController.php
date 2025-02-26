@@ -17,9 +17,9 @@ class LoginController {
     public function login() {
         $request = new Request();
         $login = $request->input('login');
-        $senha = $request->input('senha');
+        $password = $request->input('password');
 
-        if (empty($login) || empty($senha)) {
+        if (empty($login) || empty($password)) {
             return View::redirect('/', [
                 'erro' => true,
                 'error_message' => 'Preencha todos os campos!'
@@ -29,7 +29,7 @@ class LoginController {
         $userModel = new User();
         $usuario = $userModel->get([
             'login' => $login,
-            'senha' => $senha
+            'password' => $password
         ]);
 
         if ($usuario) {

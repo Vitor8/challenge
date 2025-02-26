@@ -28,8 +28,8 @@ $request = new Request();
                 <input type="text" id="login" name="login" class="form-control" placeholder="Digite seu login">
             </div>
             <div class="mb-3">
-                <label for="senha" class="form-label">Senha</label>
-                <input type="password" id="senha" name="senha" class="form-control" placeholder="Digite sua senha">
+                <label for="password" class="form-label">Senha</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha">
             </div>
             <button type="submit" class="btn btn-primary w-100">Entrar</button>
         </form>
