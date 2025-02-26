@@ -9,7 +9,7 @@ class LoginController {
         $request = new Request();
 
         return View::make('index', [
-            'erro' => $request->query('erro'),
+            'error' => $request->query('error'),
             'error_message' => $request->query('error_message')
         ]);
     }
@@ -21,7 +21,7 @@ class LoginController {
 
         if (empty($login) || empty($password)) {
             return View::redirect('/', [
-                'erro' => true,
+                'error' => true,
                 'error_message' => 'Preencha todos os campos!'
             ]);
         }
@@ -31,14 +31,14 @@ class LoginController {
 
         if (!$usuario) {
             return View::redirect('/', [
-                'erro' => true,
+                'error' => true,
                 'error_message' => 'Usuário não encontrado!'
             ]);
         }
 
         if (!password_verify($password, $usuario['password'])) {
             return View::redirect('/', [
-                'erro' => true,
+                'error' => true,
                 'error_message' => 'Senha incorreta!'
             ]);
         }
@@ -50,7 +50,7 @@ class LoginController {
         $request = new Request();
 
         return View::make('register', [
-            'erro' => $request->query('erro'),
+            'error' => $request->query('error'),
             'error_message' => $request->query('error_message')
         ]);
     }
@@ -63,14 +63,14 @@ class LoginController {
 
         if (empty($login) || empty($password) || empty($confirm_password)) {
             return View::redirect('/cadastrar', [
-                'erro' => true,
+                'error' => true,
                 'error_message' => 'Preencha todos os campos!'
             ]);
         }
 
         if ($password !== $confirm_password) {
             return View::redirect('/cadastrar', [
-                'erro' => true,
+                'error' => true,
                 'error_message' => 'As senhas não coincidem!'
             ]);
         }
@@ -80,7 +80,7 @@ class LoginController {
 
         if ($existingUser) {
             return View::redirect('/cadastrar', [
-                'erro' => true,
+                'error' => true,
                 'error_message' => 'Já existe um usuário com esse nome. Cadastre outro!'
             ]);
         }

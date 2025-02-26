@@ -27,11 +27,18 @@ class BaseModel {
     }
 
     public function create($data) {
+        global $pdo;
+        
         $columns = implode(", ", array_keys($data));
         $placeholders = ":" . implode(", :", array_keys($data));
-
+    
         $sql = "INSERT INTO {$this->table} ($columns) VALUES ($placeholders)";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($data);
+        $stmt = $pdo->prepare($sql);
+    
+        if ($stmt->execute($data)) {
+            return (object) ['id' => $pdo->lastInsertId()];
+        }
+        
+        return false;
     }
 }

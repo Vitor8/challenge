@@ -17,7 +17,7 @@ $request = new Request();
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px; background-color: #e5e5e5;">
         <h2 class="text-center mb-4">Cadastro</h2>
 
-        <?php if ($request->query('erro')): ?>
+        <?php if ($request->query('error')): ?>
             <div class="alert alert-danger text-center w-100">
                 <?php echo $request->query('error_message'); ?>
             </div>
