@@ -5,5 +5,6 @@ return [
     '/login' => ['LoginController', 'login'],
     '/cadastrar' => ['LoginController', 'registerView'],
     '/register' => ['LoginController', 'register'],
-    '/clientes' => ['UsersController', 'list']
+    '/clientes' => ['UsersController', 'list'],
+    '/save' => ['UsersController', 'save']
 ];

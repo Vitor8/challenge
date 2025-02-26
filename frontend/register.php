@@ -14,7 +14,7 @@ $request = new Request();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="d-flex align-items-center justify-content-center vh-100 bg-light">
-    <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
+    <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px; background-color: #e5e5e5;">
         <h2 class="text-center mb-4">Cadastro</h2>
 
         <?php if ($request->query('erro')): ?>
