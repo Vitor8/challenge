@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../core/View.php';
 require_once __DIR__ . '/../core/Request.php';
 require_once __DIR__ . '/../database/database.php';
+require_once __DIR__ . '/../models/User.php';
 
 class LoginController {
     public function home() {
@@ -25,24 +26,18 @@ class LoginController {
             ]);
         }
 
-        try {
-            global $pdo;
-            $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE login = :login AND senha = :senha");
-            $stmt->execute(['login' => $login, 'senha' => $senha]);
-            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+        $userModel = new User();
+        $usuario = $userModel->get([
+            'login' => $login,
+            'senha' => $senha
+        ]);
 
-            if ($usuario) {
-                return View::redirect('/home');
-            } else {
-                return View::redirect('/', [
-                    'erro' => true,
-                    'error_message' => 'Usuário não encontrado!'
-                ]);
-            }
-        } catch (PDOException $e) {
+        if ($usuario) {
+            return View::redirect('/home');
+        } else {
             return View::redirect('/', [
                 'erro' => true,
-                'error_message' => 'Erro ao conectar com o banco de dados!'
+                'error_message' => 'Usuário não encontrado!'
             ]);
         }
     }
