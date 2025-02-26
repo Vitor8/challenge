@@ -21,6 +21,11 @@ $request = new Request();
                 <?php echo $request->query('error_message'); ?>
             </div>
         <?php endif; ?>
+        <?php if ($request->query('success')): ?>
+            <div class="alert alert-success text-center w-100">
+                <?php echo $request->query('success_message'); ?>
+            </div>
+        <?php endif; ?>
 
         <form action="/login" method="POST">
             <div class="mb-3">
@@ -34,7 +39,7 @@ $request = new Request();
             <button type="submit" class="btn btn-primary w-100">Entrar</button>
         </form>
         <p class="text-center mt-3">
-            <a href="register.html">Não é cadastrado? Clique aqui para registrar-se</a>
+            <a href="/cadastrar">Não é cadastrado? Clique aqui para registrar-se</a>
         </p>
     </div>
 </body>

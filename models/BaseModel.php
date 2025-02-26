@@ -25,4 +25,13 @@ class BaseModel {
         $stmt->execute($conditions);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function create($data) {
+        $columns = implode(", ", array_keys($data));
+        $placeholders = ":" . implode(", :", array_keys($data));
+
+        $sql = "INSERT INTO {$this->table} ($columns) VALUES ($placeholders)";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($data);
+    }
 }

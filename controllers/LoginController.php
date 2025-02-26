@@ -8,7 +8,7 @@ class LoginController {
     public function home() {
         $request = new Request();
 
-        echo View::make('index', [
+        return View::make('index', [
             'erro' => $request->query('erro'),
             'error_message' => $request->query('error_message')
         ]);
@@ -27,18 +27,74 @@ class LoginController {
         }
 
         $userModel = new User();
-        $usuario = $userModel->get([
-            'login' => $login,
-            'password' => $password
-        ]);
+        $usuario = $userModel->get(['login' => $login]);
 
-        if ($usuario) {
-            return View::redirect('/home');
-        } else {
+        if (!$usuario) {
             return View::redirect('/', [
                 'erro' => true,
                 'error_message' => 'Usuário não encontrado!'
             ]);
         }
+
+        if (!password_verify($password, $usuario['password'])) {
+            return View::redirect('/', [
+                'erro' => true,
+                'error_message' => 'Senha incorreta!'
+            ]);
+        }
+
+        return View::redirect('/clientes');
+    }
+
+    public function registerView() {
+        $request = new Request();
+
+        return View::make('register', [
+            'erro' => $request->query('erro'),
+            'error_message' => $request->query('error_message')
+        ]);
+    }
+
+    public function register() {
+        $request = new Request();
+        $login = $request->input('login');
+        $password = $request->input('password');
+        $confirm_password = $request->input('confirm_password');
+
+        if (empty($login) || empty($password) || empty($confirm_password)) {
+            return View::redirect('/cadastrar', [
+                'erro' => true,
+                'error_message' => 'Preencha todos os campos!'
+            ]);
+        }
+
+        if ($password !== $confirm_password) {
+            return View::redirect('/cadastrar', [
+                'erro' => true,
+                'error_message' => 'As senhas não coincidem!'
+            ]);
+        }
+
+        $userModel = new User();
+        $existingUser = $userModel->get(['login' => $login]);
+
+        if ($existingUser) {
+            return View::redirect('/cadastrar', [
+                'erro' => true,
+                'error_message' => 'Já existe um usuário com esse nome. Cadastre outro!'
+            ]);
+        }
+
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+        $usuario = $userModel->create([
+            'login' => $login,
+            'password' => $hashedPassword
+        ]);
+
+        return View::redirect('/', [
+            'success' => true,
+            'success_message' => 'Usuário cadastrado com sucesso!'
+        ]);
     }
 }

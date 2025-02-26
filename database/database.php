@@ -9,7 +9,9 @@
     try {
         $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        echo "Conexão com o banco de dados '$dbname' foi bem-sucedida!\n";
+        if (php_sapi_name() === "cli") { 
+            fwrite(STDOUT, "Conexão com o banco de dados '$dbname' foi bem-sucedida!\n");
+        }
     } catch (PDOException $e) {
         die("Erro na conexão: " . $e->getMessage());
     }

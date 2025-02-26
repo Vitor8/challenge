@@ -14,7 +14,12 @@ if (array_key_exists($requestUri, $routes)) {
     require_once __DIR__ . "/controllers/$controllerName.php";
 
     $controller = new $controllerName();
-    $controller->$method();
+    
+    $response = $controller->$method();
+
+    if ($response !== null) {
+        echo $response;
+    }
 } else {
     http_response_code(404);
     echo "404 - Página não encontrada";
