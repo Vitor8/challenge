@@ -88,4 +88,20 @@ class ClientsController {
             'success_message' => "Cliente {$name} cadastrado com sucesso!"
         ]);
     }
+
+    public function allClients() {
+        $request = new Request();
+        $start = $request->query('start') ?? 0;
+        $limit = 10; 
+    
+        $clientModel = new Client();
+        $clients = $clientModel->getAllWithAddresses($start, $limit);
+        $totalClients = $clientModel->countClients();
+    
+        header('Content-Type: application/json');
+        echo json_encode([
+            'clients' => $clients,
+            'total' => $totalClients
+        ]);
+    }
 }

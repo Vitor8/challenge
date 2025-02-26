@@ -7,5 +7,6 @@ return [
     '/register' => ['LoginController', 'register'],
     '/clientes' => ['ClientsController', 'list'],
     '/save' => ['ClientsController', 'save'],
-    '/create' => ['ClientsController', 'create']
+    '/create' => ['ClientsController', 'create'],
+    '/allClients' => ['ClientsController', 'allClients']
 ];
