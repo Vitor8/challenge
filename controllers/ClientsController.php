@@ -104,4 +104,34 @@ class ClientsController {
             'total' => $totalClients
         ]);
     }
+
+    public function delete() {
+        $request = new Request();
+        $clientId = $request->query('id');
+    
+        if (!$clientId) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'ID do cliente não fornecido.']);
+            return;
+        }
+    
+        $clientModel = new Client();
+        $client = $clientModel->get(['id' => $clientId]);
+    
+        if (!$client) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Cliente não encontrado.']);
+            return;
+        }
+    
+        $deleted = $clientModel->delete($clientId);
+    
+        if ($deleted) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => "Cliente {$client['name']} foi removido com sucesso!"]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao deletar cliente.']);
+        }
+    }
 }

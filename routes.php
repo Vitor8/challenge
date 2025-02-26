@@ -8,5 +8,6 @@ return [
     '/clientes' => ['ClientsController', 'list'],
     '/save' => ['ClientsController', 'save'],
     '/create' => ['ClientsController', 'create'],
-    '/allClients' => ['ClientsController', 'allClients']
+    '/allClients' => ['ClientsController', 'allClients'],
+    '/deleteClient' => ['ClientsController', 'delete'],
 ];

@@ -52,6 +52,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
@@ -84,7 +85,7 @@
                                 <td>${client.addresses}</td>
                                 <td>
                                     <i class="bi bi-pencil-square text-primary me-2 edit-client" style="cursor: pointer;" data-id="${client.id}"></i>
-                                    <i class="bi bi-trash text-danger delete-client" style="cursor: pointer;" data-id="${client.id}"></i>
+                                    <i class="bi bi-trash text-danger delete-client" style="cursor: pointer;" data-id="${client.id}" data-name="${client.name}"></i>
                                 </td>
                             </tr>`;
                             $("#clientsTableBody").append(row);
@@ -110,6 +111,39 @@
                     start -= limit;
                     fetchClients();
                 }
+            });
+
+            $(document).on("click", ".delete-client", function() {
+                let clientId = $(this).data("id");
+                let clientName = $(this).data("name");
+
+                Swal.fire({
+                    title: `Tem certeza que deseja deletar o cliente ${clientName}?`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Sim, deletar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "/deleteClient",
+                            type: "GET",
+                            data: { id: clientId },
+                            success: function(response) {
+                                if (response.status === "success") {
+                                    Swal.fire("OK!", response.message, "success").then(() => {
+                                        fetchClients();
+                                    });
+                                } else {
+                                    Swal.fire("Erro!", response.message, "error");
+                                }
+                            },
+                            error: function() {
+                                Swal.fire("Erro!", "Não foi possível deletar o cliente.", "error");
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>

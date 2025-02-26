@@ -40,10 +40,29 @@ class Client extends BaseModel {
 
         return $clients;
     }
-    
+
     public function countClients() {
         global $pdo;
         $stmt = $pdo->query("SELECT COUNT(*) as total FROM clients");
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+
+    public function delete($clientId) {
+        global $pdo;
+    
+        try {
+            $pdo->beginTransaction();
+    
+            $stmt = $pdo->prepare("DELETE FROM client_address WHERE client_id = :client_id");
+            $stmt->execute(['client_id' => $clientId]);
+            $stmt = $pdo->prepare("DELETE FROM clients WHERE id = :id");
+            $stmt->execute(['id' => $clientId]);
+    
+            $pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            return false;
+        }
     }
 }
