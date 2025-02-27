@@ -168,6 +168,8 @@ A tela inicial do sistema, onde os usuários podem realizar o login. Caso as cre
 
 ![Tela de Login](screenshots/login3.png)
 
+![Tela de Login](screenshots/login4.png)
+
 ---
 
 ### 2️⃣ Tela de Cadastro de Usuário
