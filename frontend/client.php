@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php require_once __DIR__ . '/includes/head.php'; ?>
+    
     <title>Novo Cliente</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
-
     <style>
         body {
             min-height: 100vh;
@@ -24,16 +19,7 @@
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 500px; background-color: #f8f9fa;">
         <h2 class="text-center mb-4"><?php echo isset($client) ? "Editar Cliente" : "Novo Cliente"; ?></h2>
 
-        <?php if (isset($request) && $request->query('error')): ?>
-            <div class="alert alert-danger text-center w-100">
-                <?php echo $request->query('error_message'); ?>
-            </div>
-        <?php endif; ?>
-        <?php if (isset($request) && $request->query('success')): ?>
-            <div class="alert alert-success text-center w-100">
-                <?php echo $request->query('success_message'); ?>
-            </div>
-        <?php endif; ?>
+        <?php require_once __DIR__ . '/includes/messages.php'; ?>
 
         <form action="<?php echo isset($client['id']) ? '/edit?id=' . $client['id'] : '/create'; ?>" method="POST">
             <input type="hidden" name="id" value="<?php echo $client['id'] ?? ''; ?>">
@@ -194,6 +180,8 @@
         </p>
     </div>
 
+    <?php require_once __DIR__ . '/includes/scripts.php'; ?>
+
     <script>
         $(document).ready(function(){
             function applyMasks() {
@@ -222,6 +210,5 @@
             });
         });
     </script>
-
 </body>
 </html>
