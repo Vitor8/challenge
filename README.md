@@ -160,18 +160,20 @@ Contém classes auxiliares essenciais para o funcionamento do projeto.
 ### 1️⃣ Tela de Login
 A tela inicial do sistema, onde os usuários podem realizar o login. Caso as credenciais inseridas estejam incorretas, uma mensagem de erro será exibida. Além disso, se um usuário não autenticado tentar acessar qualquer página restrita, será automaticamente redirecionado para esta tela com uma notificação de acesso negado. Para criar uma conta, basta clicar no link **"Não é cadastrado? Clique aqui para registrar-se"**.
 
-![alt text](<Screenshot from 2025-02-27 13-57-49.png>)
+![Tela de Login](screenshots/login1.png)
 
-![alt text](<Screenshot from 2025-02-27 14-22-21.png>)
+![Tela de Login](screenshots/login2.png)
 
-![alt text](<Screenshot from 2025-02-27 14-22-43.png>)
+![Tela de Login](screenshots/login3.png)
 
 ---
 
 ### 2️⃣ Tela de Cadastro de Usuário
 Aqui, novos usuários podem ser cadastrados no sistema. O login deve ser único e a senha deve conter no mínimo **8 caracteres**. Caso os critérios de senha não sejam atendidos ou o login já exista, mensagens de erro apropriadas serão exibidas.
 
-*(Adicionar print da tela de cadastro do usuário aqui)*
+![Tela de Login](screenshots/cadastro1.png)
+
+![Tela de Login](screenshots/cadastro2.png)
 
 ---
 
