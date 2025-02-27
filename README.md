@@ -43,6 +43,8 @@ Para rodar os testes automatizados do projeto, execute:
     php test.php
 ```
 
+![Tela de Login](screenshots/test.png)
+
 ---
 ## Estrutura do Projeto
 
