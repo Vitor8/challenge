@@ -155,46 +155,61 @@ Contém classes auxiliares essenciais para o funcionamento do projeto.
 
 ---
 
-📸 Capturas de Tela
-1️⃣ Tela de Login
-A tela inicial do sistema, onde os usuários podem realizar o login. Caso as credenciais inseridas estejam incorretas, uma mensagem de erro será exibida. Além disso, se um usuário não autenticado tentar acessar qualquer página restrita, será automaticamente redirecionado para esta tela com uma notificação de acesso negado. Para criar uma conta, basta clicar no link "Não é cadastrado? Clique aqui para registrar-se".
+## 📸 Capturas de Tela
 
-(Adicionar print da tela de login aqui)
+### 1️⃣ Tela de Login
+A tela inicial do sistema, onde os usuários podem realizar o login. Caso as credenciais inseridas estejam incorretas, uma mensagem de erro será exibida. Além disso, se um usuário não autenticado tentar acessar qualquer página restrita, será automaticamente redirecionado para esta tela com uma notificação de acesso negado. Para criar uma conta, basta clicar no link **"Não é cadastrado? Clique aqui para registrar-se"**.
 
-2️⃣ Tela de Cadastro de Usuário
-Aqui, novos usuários podem ser cadastrados no sistema. O login deve ser único e a senha deve conter no mínimo 8 caracteres. Caso os critérios de senha não sejam atendidos ou o login já exista, mensagens de erro apropriadas serão exibidas.
+*(Adicionar print da tela de login aqui)*
 
-(Adicionar print da tela de cadastro do usuário aqui)
+---
 
-3️⃣ Tela de Listagem de Clientes
-Esta tela exibe a listagem completa dos clientes cadastrados. A navegação entre os registros pode ser feita pelos botões "Anterior" e "Próximo", que permitem percorrer os clientes de forma paginada.
+### 2️⃣ Tela de Cadastro de Usuário
+Aqui, novos usuários podem ser cadastrados no sistema. O login deve ser único e a senha deve conter no mínimo **8 caracteres**. Caso os critérios de senha não sejam atendidos ou o login já exista, mensagens de erro apropriadas serão exibidas.
 
-Na coluna "Endereços", todos os endereços associados a um cliente são exibidos, separados por ";".
-A última coluna contém os ícones para editar e excluir um cliente.
-O botão "Novo Cliente +", localizado abaixo do título, direciona o usuário para a tela de cadastro de clientes.
-(Adicionar print da tela de listagem de clientes aqui)
+*(Adicionar print da tela de cadastro do usuário aqui)*
 
-4️⃣ Tela de Cadastro de Clientes
-Nesta tela, novos clientes podem ser cadastrados. Além dos dados básicos, como nome, CPF, RG, telefone e data de nascimento, também é possível adicionar múltiplos endereços para cada cliente.
+---
 
-O botão "+" permite adicionar novos endereços.
-Cada endereço é preenchido dentro de um card, contendo os campos necessários (CEP, rua, número, bairro, cidade e estado).
-Pelo menos um endereço é obrigatório.
-(Adicionar print da tela de cadastro de clientes aqui)
+### 3️⃣ Tela de Listagem de Clientes
+Esta tela exibe a listagem completa dos clientes cadastrados. A navegação entre os registros pode ser feita pelos botões **"Anterior"** e **"Próximo"**, que permitem percorrer os clientes de forma paginada.
 
-5️⃣ Tela de Edição de Clientes
-Se um usuário clicar no ícone de edição na listagem de clientes, ele será redirecionado para esta tela. A interface de edição possui a mesma estrutura da tela de cadastro, porém, todos os dados do cliente são preenchidos automaticamente ao carregar a página.
+- Na coluna **"Endereços"**, todos os endereços associados a um cliente são exibidos, separados por `";"`.
+- A última coluna contém os ícones para **editar** e **excluir** um cliente.
+- O botão **"Novo Cliente +"**, localizado abaixo do título, direciona o usuário para a **tela de cadastro de clientes**.
 
-O usuário pode modificar os dados pessoais do cliente e seus endereços.
-O botão de salvar atualiza os dados no banco de dados.
-(Adicionar print da tela de edição de clientes aqui)
+*(Adicionar print da tela de listagem de clientes aqui)*
 
-6️⃣ Confirmação de Exclusão de Cliente
-Se o usuário clicar no ícone de exclusão (lixeira) na listagem de clientes, um alerta do SweetAlert será exibido solicitando a confirmação da remoção.
+---
 
-Se o usuário confirmar, o cliente será excluído permanentemente.
-Se o usuário cancelar, nenhuma ação será realizada.
-(Adicionar print da tela de confirmação de exclusão aqui)
+### 4️⃣ Tela de Cadastro de Clientes
+Nesta tela, novos clientes podem ser cadastrados. Além dos dados básicos, como **nome, CPF, RG, telefone e data de nascimento**, também é possível adicionar **múltiplos endereços** para cada cliente.
+
+- O botão **"+"** permite adicionar novos endereços.
+- Cada endereço é preenchido dentro de um **card**, contendo os campos necessários (CEP, rua, número, bairro, cidade e estado).
+- Pelo menos um endereço é obrigatório.
+
+*(Adicionar print da tela de cadastro de clientes aqui)*
+
+---
+
+### 5️⃣ Tela de Edição de Clientes
+Se um usuário clicar no ícone de **edição** na listagem de clientes, ele será redirecionado para esta tela. A interface de edição possui a mesma estrutura da tela de cadastro, porém, **todos os dados do cliente são preenchidos automaticamente ao carregar a página**.
+
+- O usuário pode modificar os dados pessoais do cliente e seus endereços.
+- O botão de **salvar** atualiza os dados no banco de dados.
+
+*(Adicionar print da tela de edição de clientes aqui)*
+
+---
+
+### 6️⃣ Confirmação de Exclusão de Cliente
+Se o usuário clicar no ícone de **exclusão** (lixeira) na listagem de clientes, um **alerta do SweetAlert** será exibido solicitando a confirmação da remoção.
+
+- Se o usuário confirmar, o cliente será **excluído permanentemente**.
+- Se o usuário cancelar, nenhuma ação será realizada.
+
+*(Adicionar print da tela de confirmação de exclusão aqui)*
 
 
 
