@@ -187,7 +187,6 @@ Esta tela exibe a listagem completa dos clientes cadastrados. A navegação entr
 - O botão **"Novo Cliente +"**, localizado abaixo do título, direciona o usuário para a **tela de cadastro de clientes**.
 
 ![Tela de Login](screenshots/clients1.png)
-![Tela de Login](screenshots/clients5.png)
 
 ---
 
@@ -210,6 +209,7 @@ Se um usuário clicar no ícone de **edição** na listagem de clientes, ele ser
 
 ![Tela de Login](screenshots/clients3.png)
 ![Tela de Login](screenshots/clients4.png)
+![Tela de Login](screenshots/clients5.png)
 
 ---
 
