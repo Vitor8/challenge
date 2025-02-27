@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/BaseModel.php';
+require_once __DIR__ . '/ClientAddress.php';
+require_once __DIR__ . '/Address.php';
 
 class Client extends BaseModel {
     public function __construct() {
@@ -18,15 +20,13 @@ class Client extends BaseModel {
         $stmt->execute();
         $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $clientAddressModel = new ClientAddress();
+        $addressModel = new Address();
+
         foreach ($clients as &$client) {
-            $stmt = $this->pdo->prepare("
-                SELECT a.street, a.number, a.zip_code, a.city, a.state
-                FROM addresses a
-                INNER JOIN client_address ca ON ca.address_id = a.id
-                WHERE ca.client_id = :client_id
-            ");
-            $stmt->execute(['client_id' => $client['id']]);
-            $addresses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $addressIds = $clientAddressModel->getAddressIdsByClientId($client['id']);
+
+            $addresses = $addressModel->getAddressesByIds($addressIds);
 
             $formattedAddresses = [];
             foreach ($addresses as $address) {
@@ -47,12 +47,11 @@ class Client extends BaseModel {
     public function delete($clientId) {
         try {
             $this->pdo->beginTransaction();
-
-            $stmt = $this->pdo->prepare("DELETE FROM client_address WHERE client_id = :client_id");
-            $stmt->execute(['client_id' => $clientId]);
-            $stmt = $this->pdo->prepare("DELETE FROM clients WHERE id = :id");
-            $stmt->execute(['id' => $clientId]);
-
+    
+            $clientAddressModel = new ClientAddress();
+            $clientAddressModel->delete(['client_id' => $clientId]);
+            parent::delete(['id' => $clientId]);
+    
             $this->pdo->commit();
             return true;
         } catch (PDOException $e) {
@@ -60,22 +59,22 @@ class Client extends BaseModel {
             return false;
         }
     }
+    
 
     public function getClientDataById($filters) {
         $stmt = $this->pdo->prepare("SELECT * FROM clients WHERE id = :id");
         $stmt->execute(['id' => $filters['id']]);
         $client = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    
         if (!$client) {
             return null;
         }
-
-        $stmt = $this->pdo->prepare("SELECT * FROM addresses 
-                                     INNER JOIN client_address ON addresses.id = client_address.address_id
-                                     WHERE client_address.client_id = :id");
-        $stmt->execute(['id' => $filters['id']]);
-        $addresses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
+        $clientAddressModel = new ClientAddress();
+        $addressModel = new Address();
+        $addressIds = $clientAddressModel->getAddressIdsByClientId($filters['id']);
+        $addresses = $addressModel->getAddressesByIds($addressIds);
+    
         return [
             'name' => $client['name'],
             'birth' => date('Y-m-d', strtotime($client['birth'])),
@@ -85,6 +84,7 @@ class Client extends BaseModel {
             'addresses' => $addresses
         ];
     }
+    
 
     public function edit($data) {
         $sql = "UPDATE clients SET name = :name, birth = :birth, cpf = :cpf, rg = :rg, phone = :phone WHERE id = :id";

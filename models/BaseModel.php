@@ -38,4 +38,16 @@ class BaseModel {
         
         return false;
     }
+
+    public function delete($conditions) {
+        $whereClauses = [];
+        foreach ($conditions as $key => $value) {
+            $whereClauses[] = "$key = :$key";
+        }
+        $sql = "DELETE FROM {$this->table} WHERE " . implode(" AND ", $whereClauses);
+    
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($conditions);
+    }
+    
 }

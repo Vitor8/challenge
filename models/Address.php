@@ -11,4 +11,16 @@ class Address extends BaseModel {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['client_id' => $clientId]);
     }
+
+    public function getAddressesByIds($addressIds) {
+        if (empty($addressIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($addressIds), '?'));
+
+        $stmt = $this->pdo->prepare("SELECT street, number, zip_code, city, state FROM addresses WHERE id IN ($placeholders)");
+        $stmt->execute($addressIds);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
