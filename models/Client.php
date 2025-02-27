@@ -92,4 +92,21 @@ class Client extends BaseModel {
             'addresses' => $addresses
         ];
     }
+
+    public function edit($data) {
+        global $pdo;
+
+        $sql = "UPDATE clients SET name = :name, birth = :birth, cpf = :cpf, rg = :rg, phone = :phone WHERE id = :id";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'id' => $data['id'],
+            'name' => $data['name'],
+            'birth' => $data['birth'],
+            'cpf' => $data['cpf'],
+            'rg' => $data['rg'],
+            'phone' => $data['phone']
+        ]);
+    }
+
 }

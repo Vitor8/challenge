@@ -35,7 +35,7 @@
             </div>
         <?php endif; ?>
 
-        <form action="<?php echo isset($client) ? "/edit" : "/create"; ?>" method="POST">
+        <form action="<?php echo isset($client['id']) ? '/edit?id=' . $client['id'] : '/create'; ?>" method="POST">
             <input type="hidden" name="id" value="<?php echo $client['id'] ?? ''; ?>">
 
             <div class="mb-3">
@@ -183,7 +183,10 @@
                 <?php endif; ?>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Cadastrar Cliente</button>
+            <button type="submit" class="btn btn-primary w-100">
+                <?php echo isset($client['id']) ? 'Editar Cliente' : 'Cadastrar Cliente'; ?>
+            </button>
+
         </form>
 
         <p class="text-center mt-3">

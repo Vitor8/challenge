@@ -105,6 +105,72 @@ class ClientsController {
         ]);
     }
 
+    public function edit() {
+        $request = new Request();
+        $idClient = $request->input('id');
+
+        if (!$idClient) {
+            return View::redirect('/clientes', [
+                'error' => true,
+                'error_message' => 'ID do cliente não foi informado!'
+            ]);
+        }
+
+        $clientModel = new Client();
+
+        $existingClient = $clientModel->get(['id' => $idClient]);
+
+        if (!$existingClient) {
+            return View::redirect('/clientes', [
+                'error' => true,
+                'error_message' => 'Cliente não encontrado!'
+            ]);
+        }
+
+        $name = $request->input('name');
+        $birth = $request->input('birth');
+        $cpf = $request->input('cpf');
+        $rg = $request->input('rg');
+        $phone = $request->input('phone');
+        $addresses = $request->input('zip');
+
+        $clientModel->edit([
+            'id' => $idClient,
+            'name' => $name,
+            'birth' => date('Y-m-d', strtotime(str_replace('/', '-', $birth))),
+            'cpf' => $cpf,
+            'rg' => $rg,
+            'phone' => $phone
+        ]);
+
+        $addressModel = new Address();
+        $clientAddressModel = new ClientAddress();
+        $clientAddressModel->deleteByClientId($idClient);
+        $addressModel->deleteByClientId($idClient);
+
+        foreach ($addresses as $key => $zip) {
+            $newAddress = $addressModel->create([
+                'zip_code' => $zip,
+                'state' => $request->input('state')[$key],
+                'street' => $request->input('street')[$key],
+                'number' => $request->input('number')[$key],
+                'district' => $request->input('district')[$key],
+                'city' => $request->input('city')[$key]
+            ]);
+
+            $clientAddressModel->create([
+                'client_id' => $idClient,
+                'address_id' => $newAddress->id
+            ]);
+        }
+
+        return View::redirect('/clientes', [
+            'success' => true,
+            'success_message' => "Cliente {$name} atualizado com sucesso!"
+        ]);
+    }
+
+
     public function allClients() {
         $request = new Request();
         $start = $request->query('start') ?? 0;
