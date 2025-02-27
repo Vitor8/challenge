@@ -184,7 +184,7 @@ Esta tela exibe a listagem completa dos clientes cadastrados. A navegação entr
 - A última coluna contém os ícones para **editar** e **excluir** um cliente.
 - O botão **"Novo Cliente +"**, localizado abaixo do título, direciona o usuário para a **tela de cadastro de clientes**.
 
-*(Adicionar print da tela de listagem de clientes aqui)*
+![Tela de Login](screenshots/clients1.png)
 
 ---
 
@@ -195,7 +195,7 @@ Nesta tela, novos clientes podem ser cadastrados. Além dos dados básicos, como
 - Cada endereço é preenchido dentro de um **card**, contendo os campos necessários (CEP, rua, número, bairro, cidade e estado).
 - Pelo menos um endereço é obrigatório.
 
-*(Adicionar print da tela de cadastro de clientes aqui)*
+![Tela de Login](screenshots/clients2.png)
 
 ---
 
@@ -205,7 +205,8 @@ Se um usuário clicar no ícone de **edição** na listagem de clientes, ele ser
 - O usuário pode modificar os dados pessoais do cliente e seus endereços.
 - O botão de **salvar** atualiza os dados no banco de dados.
 
-*(Adicionar print da tela de edição de clientes aqui)*
+![Tela de Login](screenshots/clients3.png)
+![Tela de Login](screenshots/clients4.png)
 
 ---
 
@@ -215,9 +216,8 @@ Se o usuário clicar no ícone de **exclusão** (lixeira) na listagem de cliente
 - Se o usuário confirmar, o cliente será **excluído permanentemente**.
 - Se o usuário cancelar, nenhuma ação será realizada.
 
-*(Adicionar print da tela de confirmação de exclusão aqui)*
-
-
+![Tela de Login](screenshots/delete1.png)
+![Tela de Login](screenshots/delete2.png)
 
 ## 📜 Licença
 Este projeto foi desenvolvido para fins acadêmicos e de aprendizado.
