@@ -43,6 +43,8 @@ class LoginController {
             ]);
         }
 
+        $_SESSION['user_id'] = $usuario['id'];
+
         return View::redirect('/clientes');
     }
 

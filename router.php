@@ -1,26 +1,38 @@
 <?php
 
+require_once __DIR__ . '/core/AuthMiddleware.php';
+
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 if (file_exists(__DIR__ . "/frontend" . $requestUri)) {
     return false;
 }
 
+AuthMiddleware::checkAuthentication($requestUri);
 $routes = require 'routes.php';
 
 if (array_key_exists($requestUri, $routes)) {
     [$controllerName, $method] = $routes[$requestUri];
 
-    require_once __DIR__ . "/controllers/$controllerName.php";
+    $controllerFile = __DIR__ . "/controllers/$controllerName.php";
 
-    $controller = new $controllerName();
-    
-    $response = $controller->$method();
+    if (file_exists($controllerFile)) {
+        require_once $controllerFile;
 
-    if ($response !== null) {
-        echo $response;
+        if (class_exists($controllerName)) {
+            $controllerInstance = new $controllerName();
+            
+            if (method_exists($controllerInstance, $method)) {
+                $response = $controllerInstance->$method();
+                
+                if ($response !== null) {
+                    echo $response;
+                }
+                exit;
+            }
+        }
     }
-} else {
-    http_response_code(404);
-    echo "404 - Página não encontrada";
 }
+
+http_response_code(404);
+echo "404 - Página não encontrada";
