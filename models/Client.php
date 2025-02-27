@@ -7,9 +7,7 @@ class Client extends BaseModel {
     }
 
     public function getAllWithAddresses($start, $limit) {
-        global $pdo;
-
-        $stmt = $pdo->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT c.id, c.name, DATE_FORMAT(c.birth, '%d/%m/%Y') as birth, c.cpf, c.rg, c.phone
             FROM clients c
             ORDER BY c.id DESC
@@ -21,7 +19,7 @@ class Client extends BaseModel {
         $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($clients as &$client) {
-            $stmt = $pdo->prepare("
+            $stmt = $this->pdo->prepare("
                 SELECT a.street, a.number, a.zip_code, a.city, a.state
                 FROM addresses a
                 INNER JOIN client_address ca ON ca.address_id = a.id
@@ -42,50 +40,45 @@ class Client extends BaseModel {
     }
 
     public function countClients() {
-        global $pdo;
-        $stmt = $pdo->query("SELECT COUNT(*) as total FROM clients");
+        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM clients");
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function delete($clientId) {
-        global $pdo;
-    
         try {
-            $pdo->beginTransaction();
-    
-            $stmt = $pdo->prepare("DELETE FROM client_address WHERE client_id = :client_id");
+            $this->pdo->beginTransaction();
+
+            $stmt = $this->pdo->prepare("DELETE FROM client_address WHERE client_id = :client_id");
             $stmt->execute(['client_id' => $clientId]);
-            $stmt = $pdo->prepare("DELETE FROM clients WHERE id = :id");
+            $stmt = $this->pdo->prepare("DELETE FROM clients WHERE id = :id");
             $stmt->execute(['id' => $clientId]);
-    
-            $pdo->commit();
+
+            $this->pdo->commit();
             return true;
         } catch (PDOException $e) {
-            $pdo->rollBack();
+            $this->pdo->rollBack();
             return false;
         }
     }
 
     public function getClientDataById($filters) {
-        global $pdo;
-        
-        $stmt = $pdo->prepare("SELECT * FROM clients WHERE id = :id");
+        $stmt = $this->pdo->prepare("SELECT * FROM clients WHERE id = :id");
         $stmt->execute(['id' => $filters['id']]);
         $client = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
         if (!$client) {
             return null;
         }
-    
-        $stmt = $pdo->prepare("SELECT * FROM addresses 
-                               INNER JOIN client_address ON addresses.id = client_address.address_id
-                               WHERE client_address.client_id = :id");
+
+        $stmt = $this->pdo->prepare("SELECT * FROM addresses 
+                                     INNER JOIN client_address ON addresses.id = client_address.address_id
+                                     WHERE client_address.client_id = :id");
         $stmt->execute(['id' => $filters['id']]);
         $addresses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
         return [
             'name' => $client['name'],
-            'birth' => date('d/m/Y', strtotime($client['birth'])),
+            'birth' => date('Y-m-d', strtotime($client['birth'])),
             'cpf' => $client['cpf'],
             'rg' => $client['rg'],
             'phone' => $client['phone'],
@@ -94,11 +87,9 @@ class Client extends BaseModel {
     }
 
     public function edit($data) {
-        global $pdo;
-
         $sql = "UPDATE clients SET name = :name, birth = :birth, cpf = :cpf, rg = :rg, phone = :phone WHERE id = :id";
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'id' => $data['id'],
             'name' => $data['name'],
@@ -108,5 +99,4 @@ class Client extends BaseModel {
             'phone' => $data['phone']
         ]);
     }
-
 }

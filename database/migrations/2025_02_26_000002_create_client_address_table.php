@@ -1,7 +1,9 @@
 <?php
-require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/../../core/DB.php';
 
 try {
+    $pdo = DB::getConnection();
+
     $sql = "CREATE TABLE IF NOT EXISTS client_address (
         client_id INT NOT NULL,
         address_id INT NOT NULL,

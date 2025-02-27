@@ -1,20 +1,14 @@
 <?php
 
-require_once __DIR__ . '/../env.php';
+require_once __DIR__ . '/../core/DB.php';
 
 class DatabaseTest {
     private $pdo;
 
     public function __construct() {
-        $host = getenv('DB_HOST');
-        $dbname = getenv('DB_NAME');
-        $user = getenv('DB_USER');
-        $pass = getenv('DB_PASS');
-
         try {
-            $this->pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo "[✅] Conexão com o banco de dados '$dbname' foi bem-sucedida.\n";
+            $this->pdo = DB::getConnection();
+            echo "[✅] Conexão com o banco de dados foi bem-sucedida.\n";
         } catch (PDOException $e) {
             echo "[❌] Erro na conexão com MySQL: " . $e->getMessage() . "\n";
             exit(1);
@@ -22,10 +16,14 @@ class DatabaseTest {
 
         $this->checkTableExists('migrations');
         $this->checkTableExists('usuarios');
+        $this->checkTableExists('clients');
+        $this->checkTableExists('addresses');
+        $this->checkTableExists('client_address');
     }
 
     private function checkTableExists($tableName) {
-        $stmt = $this->pdo->query("SHOW TABLES LIKE '$tableName'");
+        $stmt = $this->pdo->prepare("SHOW TABLES LIKE :tableName");
+        $stmt->execute(['tableName' => $tableName]);
         $tableExists = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($tableExists) {

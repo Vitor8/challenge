@@ -7,10 +7,8 @@ class Address extends BaseModel {
     }
 
     public function deleteByClientId($clientId) {
-        global $pdo;
-
         $sql = "DELETE FROM addresses WHERE id IN (SELECT address_id FROM client_address WHERE client_id = :client_id)";
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['client_id' => $clientId]);
     }
 }

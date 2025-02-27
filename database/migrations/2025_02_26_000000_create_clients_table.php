@@ -1,7 +1,9 @@
 <?php
-require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/../../core/DB.php';
 
 try {
+    $pdo = DB::getConnection();
+
     $sql = "CREATE TABLE IF NOT EXISTS clients (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
