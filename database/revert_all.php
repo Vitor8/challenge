@@ -4,34 +4,32 @@ require_once __DIR__ . '/../core/DB.php';
 try {
     $pdo = DB::getConnection();
 
-    $stmt = $pdo->query("SELECT migration_name FROM migrations");
+    $stmt = $pdo->query("SELECT migration_name FROM migrations ORDER BY id DESC");
     $executedMigrations = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    $migrationFiles = glob(__DIR__ . '/migrations/*.php');
+    foreach ($executedMigrations as $migrationName) {
+        $migrationFile = __DIR__ . "/migrations/$migrationName.php";
 
-    foreach ($migrationFiles as $migrationFile) {
-        $migrationName = basename($migrationFile, '.php');
-
-        if (!in_array($migrationName, $executedMigrations)) {
+        if (file_exists($migrationFile)) {
             require_once $migrationFile;
 
             $className = getMigrationClassName($migrationFile);
 
             if ($className && class_exists($className)) {
                 $migrationInstance = new $className();
-                $migrationInstance->up();
+                $migrationInstance->down();
 
-                $stmt = $pdo->prepare("INSERT INTO migrations (migration_name) VALUES (:migration_name)");
+                $stmt = $pdo->prepare("DELETE FROM migrations WHERE migration_name = :migration_name");
                 $stmt->execute(['migration_name' => $migrationName]);
 
-                echo "✅ Migration '$migrationName' executada com sucesso!\n";
+                echo "⚠️ Migration '$migrationName' revertida com sucesso!\n";
             } else {
                 echo "⚠️ Classe da migration não encontrada em '$migrationFile'.\n";
             }
         }
     }
 } catch (PDOException $e) {
-    die("❌ Erro ao executar as migrations: " . $e->getMessage() . "\n");
+    die("❌ Erro ao reverter as migrations: " . $e->getMessage() . "\n");
 }
 
 function getMigrationClassName($filePath) {
