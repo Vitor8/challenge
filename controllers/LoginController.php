@@ -43,7 +43,9 @@ class LoginController {
             ]);
         }
 
-        $_SESSION['user_id'] = $usuario['id'];
+        $token = bin2hex(random_bytes(32));
+        setcookie('auth_token', $token, time() + 3600, '/', '', false, true);
+        $userModel->saveToken($usuario['id'], $token);
 
         return View::redirect('/clientes');
     }

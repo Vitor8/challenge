@@ -85,16 +85,7 @@ class Client extends BaseModel {
     }
 
     public function edit($data) {
-        $sql = "UPDATE clients SET name = :name, birth = :birth, cpf = :cpf, rg = :rg, phone = :phone WHERE id = :id";
-
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            'id' => $data['id'],
-            'name' => $data['name'],
-            'birth' => $data['birth'],
-            'cpf' => $data['cpf'],
-            'rg' => $data['rg'],
-            'phone' => $data['phone']
-        ]);
+        return parent::edit($data);
     }
+    
 }

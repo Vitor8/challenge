@@ -49,5 +49,20 @@ class BaseModel {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($conditions);
     }
+
+    public function edit($data) {
+        $columns = [];
+        foreach ($data as $key => $value) {
+            if ($key !== 'id') {
+                $columns[] = "$key = :$key";
+            }
+        }
+    
+        $sql = "UPDATE {$this->table} SET " . implode(", ", $columns) . " WHERE id = :id";
+    
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($data);
+    }
+    
     
 }
