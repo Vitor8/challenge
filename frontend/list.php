@@ -106,12 +106,19 @@
                 }
             });
 
+
             $("#prevPage").click(function() {
                 if (start > 0) {
                     start -= limit;
                     fetchClients();
                 }
             });
+
+            $(document).on("click", ".edit-client", function() {
+                let clientId = $(this).data("id");
+                window.location.href = `/save?id=${clientId}`;
+            });
+
 
             $(document).on("click", ".delete-client", function() {
                 let clientId = $(this).data("id");

@@ -22,7 +22,7 @@
 </head>
 <body class="bg-light">
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 500px; background-color: #f8f9fa;">
-        <h2 class="text-center mb-4">Novo Cliente</h2>
+        <h2 class="text-center mb-4"><?php echo isset($client) ? "Editar Cliente" : "Novo Cliente"; ?></h2>
 
         <?php if (isset($request) && $request->query('error')): ?>
             <div class="alert alert-danger text-center w-100">
@@ -35,31 +35,38 @@
             </div>
         <?php endif; ?>
 
-        <form action="/create" method="POST">
+        <form action="<?php echo isset($client) ? "/edit" : "/create"; ?>" method="POST">
+            <input type="hidden" name="id" value="<?php echo $client['id'] ?? ''; ?>">
+
             <div class="mb-3">
                 <label for="name" class="form-label">Nome</label>
-                <input type="text" id="name" name="name" class="form-control" placeholder="Digite o nome completo" required>
+                <input type="text" id="name" name="name" class="form-control" 
+                    value="<?php echo $client['data']['name'] ?? ''; ?>" required>
             </div>
 
             <div class="row mb-3">
                 <div class="col-6">
                     <label for="birth" class="form-label">Data de Nascimento</label>
-                    <input type="text" id="birth" name="birth" class="form-control" placeholder="DD/MM/AAAA" required>
+                    <input type="text" id="birth" name="birth" class="form-control"
+                        value="<?php echo $client['data']['birth'] ?? ''; ?>" required>
                 </div>
                 <div class="col-6">
                     <label for="cpf" class="form-label">CPF</label>
-                    <input type="text" id="cpf" name="cpf" class="form-control" placeholder="000.000.000-00" required>
+                    <input type="text" id="cpf" name="cpf" class="form-control"
+                        value="<?php echo $client['data']['cpf'] ?? ''; ?>" required>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-6">
                     <label for="rg" class="form-label">RG</label>
-                    <input type="text" id="rg" name="rg" class="form-control" placeholder="00.000.000-0" required>
+                    <input type="text" id="rg" name="rg" class="form-control"
+                        value="<?php echo $client['data']['rg'] ?? ''; ?>" required>
                 </div>
                 <div class="col-6">
                     <label for="phone" class="form-label">Telefone</label>
-                    <input type="text" id="phone" name="phone" class="form-control" placeholder="(00) 00000-0000" required>
+                    <input type="text" id="phone" name="phone" class="form-control"
+                        value="<?php echo $client['data']['phone'] ?? ''; ?>" required>
                 </div>
             </div>
 
@@ -70,71 +77,110 @@
             </div>
 
             <div id="addressContainer">
-                <div class="card p-3 mb-3 address-card">
-                    <div class="d-flex justify-content-between">
-                        <span><i class="bi bi-trash-fill text-danger d-none remove-address"></i></span>
-                        <h6 class="text-primary">Novo Endereço</h6>
+                <?php if (isset($client['data']['addresses']) && count($client['data']['addresses']) > 0): ?>
+                    <?php foreach ($client['data']['addresses'] as $address): ?>
+                        <div class="card p-3 mb-3 address-card">
+                            <div class="d-flex justify-content-between">
+                                <span>
+                                    <i class="bi bi-trash-fill text-danger remove-address"></i>
+                                </span>
+                                <h6 class="text-primary">Endereço</h6>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-10">
+                                    <label class="form-label">CEP</label>
+                                    <input type="text" name="zip[]" class="form-control zip" 
+                                        value="<?php echo $address['zip_code']; ?>" required>
+                                </div>
+                                <div class="col-2">
+                                    <label class="form-label">Estado</label>
+                                    <select name="state[]" class="form-control" required>
+                                        <?php
+                                        $states = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
+                                                'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
+                                                'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+                                        foreach ($states as $state) {
+                                            $selected = ($state === $address['state']) ? 'selected' : '';
+                                            echo "<option value='$state' $selected>$state</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-9">
+                                    <label class="form-label">Rua</label>
+                                    <input type="text" name="street[]" class="form-control" 
+                                        value="<?php echo $address['street']; ?>" required>
+                                </div>
+                                <div class="col-3">
+                                    <label class="form-label">Número</label>
+                                    <input type="text" name="number[]" class="form-control number-input" 
+                                        value="<?php echo $address['number']; ?>" required>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label class="form-label">Bairro</label>
+                                    <input type="text" name="district[]" class="form-control"
+                                        value="<?php echo $address['district']; ?>" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Cidade</label>
+                                    <input type="text" name="city[]" class="form-control" 
+                                        value="<?php echo $address['city']; ?>" required>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="card p-3 mb-3 address-card">
+                        <div class="d-flex justify-content-between">
+                            <span><i class="bi bi-trash-fill text-danger d-none remove-address"></i></span>
+                            <h6 class="text-primary">Endereço</h6>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-10">
+                                <label class="form-label">CEP</label>
+                                <input type="text" name="zip[]" class="form-control zip" placeholder="00000-000" required>
+                            </div>
+                            <div class="col-2">
+                                <label class="form-label">Estado</label>
+                                <select name="state[]" class="form-control" required>
+                                    <option value="">UF</option>
+                                    <?php
+                                    $states = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
+                                            'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
+                                            'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+                                    foreach ($states as $state) {
+                                        echo "<option value='$state'>$state</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-9">
+                                <label class="form-label">Rua</label>
+                                <input type="text" name="street[]" class="form-control" placeholder="Digite a rua" required>
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label">Número</label>
+                                <input type="text" name="number[]" class="form-control number-input" placeholder="Nº" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <label class="form-label">Bairro</label>
+                                <input type="text" name="district[]" class="form-control" placeholder="Digite o bairro" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Cidade</label>
+                                <input type="text" name="city[]" class="form-control" placeholder="Digite a cidade" required>
+                            </div>
+                        </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-10">
-                            <label for="zip[]" class="form-label">CEP</label>
-                            <input type="text" name="zip[]" class="form-control zip" placeholder="00000-000" required>
-                        </div>
-                        <div class="col-2">
-                            <label for="state[]" class="form-label">Estado</label>
-                            <select name="state[]" class="form-control" required>
-                                <option value="">UF</option>
-                                <option value="AC">AC</option>
-                                <option value="AL">AL</option>
-                                <option value="AP">AP</option>
-                                <option value="AM">AM</option>
-                                <option value="BA">BA</option>
-                                <option value="CE">CE</option>
-                                <option value="DF">DF</option>
-                                <option value="ES">ES</option>
-                                <option value="GO">GO</option>
-                                <option value="MA">MA</option>
-                                <option value="MT">MT</option>
-                                <option value="MS">MS</option>
-                                <option value="MG">MG</option>
-                                <option value="PA">PA</option>
-                                <option value="PB">PB</option>
-                                <option value="PR">PR</option>
-                                <option value="PE">PE</option>
-                                <option value="PI">PI</option>
-                                <option value="RJ">RJ</option>
-                                <option value="RN">RN</option>
-                                <option value="RS">RS</option>
-                                <option value="RO">RO</option>
-                                <option value="RR">RR</option>
-                                <option value="SC">SC</option>
-                                <option value="SP">SP</option>
-                                <option value="SE">SE</option>
-                                <option value="TO">TO</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-9">
-                            <label for="street[]" class="form-label">Rua</label>
-                            <input type="text" name="street[]" class="form-control" placeholder="Digite a rua" required>
-                        </div>
-                        <div class="col-3">
-                            <label for="number[]" class="form-label">Número</label>
-                            <input type="text" name="number[]" class="form-control number-input" placeholder="Nº" required>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <label for="district[]" class="form-label">Bairro</label>
-                            <input type="text" name="district[]" class="form-control" placeholder="Digite o bairro" required>
-                        </div>
-                        <div class="col-6">
-                            <label for="city[]" class="form-label">Cidade</label>
-                            <input type="text" name="city[]" class="form-control" placeholder="Digite a cidade" required>
-                        </div>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Cadastrar Cliente</button>

@@ -65,4 +65,31 @@ class Client extends BaseModel {
             return false;
         }
     }
+
+    public function getClientDataById($filters) {
+        global $pdo;
+        
+        $stmt = $pdo->prepare("SELECT * FROM clients WHERE id = :id");
+        $stmt->execute(['id' => $filters['id']]);
+        $client = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        if (!$client) {
+            return null;
+        }
+    
+        $stmt = $pdo->prepare("SELECT * FROM addresses 
+                               INNER JOIN client_address ON addresses.id = client_address.address_id
+                               WHERE client_address.client_id = :id");
+        $stmt->execute(['id' => $filters['id']]);
+        $addresses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        return [
+            'name' => $client['name'],
+            'birth' => date('d/m/Y', strtotime($client['birth'])),
+            'cpf' => $client['cpf'],
+            'rg' => $client['rg'],
+            'phone' => $client['phone'],
+            'addresses' => $addresses
+        ];
+    }
 }

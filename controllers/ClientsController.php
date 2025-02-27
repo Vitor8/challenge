@@ -15,8 +15,24 @@ class ClientsController {
 
     public function save() {
         $request = new Request();
+        $clientId = $request->query('id');
+    
+        $client = null;
+        if ($clientId) {
+            $clientModel = new Client();
+            $clientData = $clientModel->getClientDataById(['id' => $clientId]);
+    
+            if ($clientData) {
+                $client = [
+                    'id' => $clientId,
+                    'data' => $clientData
+                ];
+            }
+        }
+    
         return View::make('client', [
-            'request' => $request
+            'request' => $request,
+            'client' => $client
         ]);
     }
 
