@@ -159,8 +159,11 @@ Contém classes auxiliares essenciais para o funcionamento do projeto.
 
 ## 📸 Capturas de Tela
 
-### 1️⃣ Tela de Login
+### 🖥️ Tela 1: Tela de Login
+
 A tela inicial do sistema, onde os usuários podem realizar o login. Caso as credenciais inseridas estejam incorretas, uma mensagem de erro será exibida. Além disso, se um usuário não autenticado tentar acessar qualquer página restrita, será automaticamente redirecionado para esta tela com uma notificação de acesso negado. Para criar uma conta, basta clicar no link **"Não é cadastrado? Clique aqui para registrar-se"**.
+
+A autenticação do sistema é baseada em **cookies e tokens de autenticação**. Ao realizar o login com sucesso, um **token único** é gerado e armazenado no banco de dados, junto com um prazo de expiração. Esse token é então enviado para o navegador do usuário via **cookie HTTP-Only**, garantindo que ele não possa ser acessado diretamente por JavaScript, aumentando a segurança. Em cada requisição, o sistema verifica se o **cookie ainda é válido e se o token armazenado no banco de dados ainda não expirou**. Caso contrário, o usuário é automaticamente deslogado e redirecionado para a página de login.
 
 ![Tela de Login](screenshots/login1.png)
 
