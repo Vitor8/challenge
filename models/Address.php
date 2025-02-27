@@ -19,7 +19,7 @@ class Address extends BaseModel {
 
         $placeholders = implode(',', array_fill(0, count($addressIds), '?'));
 
-        $stmt = $this->pdo->prepare("SELECT street, number, zip_code, city, state FROM addresses WHERE id IN ($placeholders)");
+        $stmt = $this->pdo->prepare("SELECT street, number, zip_code, city, district, state FROM addresses WHERE id IN ($placeholders)");
         $stmt->execute($addressIds);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

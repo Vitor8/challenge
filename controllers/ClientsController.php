@@ -170,7 +170,6 @@ class ClientsController {
         ]);
     }
 
-
     public function allClients() {
         $request = new Request();
         $start = $request->query('start') ?? 0;

@@ -59,7 +59,6 @@ class Client extends BaseModel {
             return false;
         }
     }
-    
 
     public function getClientDataById($filters) {
         $stmt = $this->pdo->prepare("SELECT * FROM clients WHERE id = :id");
@@ -84,7 +83,6 @@ class Client extends BaseModel {
             'addresses' => $addresses
         ];
     }
-    
 
     public function edit($data) {
         $sql = "UPDATE clients SET name = :name, birth = :birth, cpf = :cpf, rg = :rg, phone = :phone WHERE id = :id";
