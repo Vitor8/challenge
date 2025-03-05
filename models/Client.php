@@ -76,7 +76,7 @@ class Client extends BaseModel {
     
         return [
             'name' => $client['name'],
-            'birth' => date('Y-m-d', strtotime($client['birth'])),
+            'birth' => date('d-m-Y', strtotime($client['birth'])),
             'cpf' => $client['cpf'],
             'rg' => $client['rg'],
             'phone' => $client['phone'],

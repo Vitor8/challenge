@@ -1,11 +1,17 @@
 <?php
+
 require_once __DIR__ . '/../core/View.php';
 require_once __DIR__ . '/../core/Request.php';
-require_once __DIR__ . '/../database/database.php';
 require_once __DIR__ . '/../models/User.php';
 
 class LoginController {
-    public function home() {
+    private User $userModel;
+
+    public function __construct() {
+        $this->userModel = new User();
+    }
+
+    public function home(): string {
         $request = new Request();
 
         return View::make('index', [
@@ -19,38 +25,27 @@ class LoginController {
         $login = $request->input('login');
         $password = $request->input('password');
 
-        if (empty($login) || empty($password)) {
-            return View::redirect('/', [
-                'error' => true,
-                'error_message' => 'Preencha todos os campos!'
-            ]);
+        $validationError = $this->validateLoginFields($login, $password);
+        if ($validationError) {
+            return View::redirect('/', $validationError);
         }
 
-        $userModel = new User();
-        $usuario = $userModel->get(['login' => $login]);
-
-        if (!$usuario) {
+        $usuario = $this->userModel->get(['login' => $login]);
+        if (!$usuario || !password_verify($password, $usuario['password'])) {
             return View::redirect('/', [
                 'error' => true,
-                'error_message' => 'Usuário não encontrado!'
-            ]);
-        }
-
-        if (!password_verify($password, $usuario['password'])) {
-            return View::redirect('/', [
-                'error' => true,
-                'error_message' => 'Senha incorreta!'
+                'error_message' => 'Usuário ou senha incorretos!'
             ]);
         }
 
         $token = bin2hex(random_bytes(32));
         setcookie('auth_token', $token, time() + 3600, '/', '', false, true);
-        $userModel->saveToken($usuario['id'], $token);
+        $this->userModel->saveToken($usuario['id'], $token);
 
         return View::redirect('/clientes');
     }
 
-    public function registerView() {
+    public function registerView(): string {
         $request = new Request();
 
         return View::make('register', [
@@ -63,25 +58,14 @@ class LoginController {
         $request = new Request();
         $login = $request->input('login');
         $password = $request->input('password');
-        $confirm_password = $request->input('confirm_password');
+        $confirmPassword = $request->input('confirm_password');
 
-        if (empty($login) || empty($password) || empty($confirm_password)) {
-            return View::redirect('/cadastrar', [
-                'error' => true,
-                'error_message' => 'Preencha todos os campos!'
-            ]);
+        $validationError = $this->validateRegisterFields($login, $password, $confirmPassword);
+        if ($validationError) {
+            return View::redirect('/cadastrar', $validationError);
         }
 
-        if ($password !== $confirm_password) {
-            return View::redirect('/cadastrar', [
-                'error' => true,
-                'error_message' => 'As senhas não coincidem!'
-            ]);
-        }
-
-        $userModel = new User();
-        $existingUser = $userModel->get(['login' => $login]);
-
+        $existingUser = $this->userModel->get(['login' => $login]);
         if ($existingUser) {
             return View::redirect('/cadastrar', [
                 'error' => true,
@@ -90,8 +74,7 @@ class LoginController {
         }
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        
-        $usuario = $userModel->create([
+        $this->userModel->create([
             'login' => $login,
             'password' => $hashedPassword
         ]);
@@ -100,5 +83,33 @@ class LoginController {
             'success' => true,
             'success_message' => 'Usuário cadastrado com sucesso!'
         ]);
+    }
+
+    private function validateLoginFields(?string $login, ?string $password): ?array {
+        if (empty($login) || empty($password)) {
+            return [
+                'error' => true,
+                'error_message' => 'Preencha todos os campos!'
+            ];
+        }
+        return null;
+    }
+
+    private function validateRegisterFields(?string $login, ?string $password, ?string $confirmPassword): ?array {
+        if (empty($login) || empty($password) || empty($confirmPassword)) {
+            return [
+                'error' => true,
+                'error_message' => 'Preencha todos os campos!'
+            ];
+        }
+
+        if ($password !== $confirmPassword) {
+            return [
+                'error' => true,
+                'error_message' => 'As senhas não coincidem!'
+            ];
+        }
+
+        return null;
     }
 }

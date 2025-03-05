@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../core/View.php';
 require_once __DIR__ . '/../core/Request.php';
 require_once __DIR__ . '/../models/Client.php';
@@ -6,22 +7,28 @@ require_once __DIR__ . '/../models/Address.php';
 require_once __DIR__ . '/../models/ClientAddress.php';
 
 class ClientsController {
-    public function list() {
-        $request = new Request();
-        return View::make('list', [
-            'request' => $request
-        ]);
+    private Client $clientModel;
+    private Address $addressModel;
+    private ClientAddress $clientAddressModel;
+
+    public function __construct() {
+        $this->clientModel = new Client();
+        $this->addressModel = new Address();
+        $this->clientAddressModel = new ClientAddress();
     }
 
-    public function save() {
+    public function list(): string {
+        return View::make('list', ['request' => new Request()]);
+    }
+
+    public function save(): string {
         $request = new Request();
         $clientId = $request->query('id');
-    
+
         $client = null;
         if ($clientId) {
-            $clientModel = new Client();
-            $clientData = $clientModel->getClientDataById(['id' => $clientId]);
-    
+            $clientData = $this->clientModel->getClientDataById(['id' => $clientId]);
+
             if ($clientData) {
                 $client = [
                     'id' => $clientId,
@@ -29,7 +36,7 @@ class ClientsController {
                 ];
             }
         }
-    
+
         return View::make('client', [
             'request' => $request,
             'client' => $client
@@ -38,70 +45,35 @@ class ClientsController {
 
     public function create() {
         $request = new Request();
-        
-        $name = $request->input('name');
-        $birth = $request->input('birth');
-        $cpf = $request->input('cpf');
-        $rg = $request->input('rg');
-        $phone = $request->input('phone');
+        $clientData = [
+            'name' => $request->input('name'),
+            'birth' => $request->input('birth'),
+            'cpf' => $request->input('cpf'),
+            'rg' => $request->input('rg'),
+            'phone' => $request->input('phone')
+        ];
         $addresses = $request->input('zip');
 
-        if (empty($name) || empty($birth) || empty($cpf) || empty($rg) || empty($phone) || empty($addresses[0])) {
-            return View::redirect('/save', [
-                'error' => true,
-                'error_message' => 'Preencha todos os campos obrigatórios!'
-            ]);
+        $validationError = $this->validateClientFields($clientData, $addresses);
+        if ($validationError) {
+            return View::redirect('/save', $validationError);
         }
 
-        $clientModel = new Client();
-        
-        $existingClient = $clientModel->get([
-            'cpf' => $cpf
-        ]) ?? $clientModel->get([
-            'rg' => $rg
-        ]);
-        
-        if ($existingClient) {
+        if ($this->clientModel->get(['cpf' => $clientData['cpf']]) || $this->clientModel->get(['rg' => $clientData['rg']])) {
             return View::redirect('/save', [
                 'error' => true,
                 'error_message' => 'Já existe um usuário com este RG ou CPF cadastrados!'
             ]);
         }
 
-        $client = $clientModel->create([
-            'name' => $name,
-            'birth' => DateTime::createFromFormat('d/m/Y', $birth)->format('Y-m-d'),
-            'cpf' => $cpf,
-            'rg' => $rg,
-            'phone' => $phone
-        ]);
+        $clientData['birth'] = DateTime::createFromFormat('d/m/Y', $clientData['birth'])->format('Y-m-d');
+        $client = $this->clientModel->create($clientData);
 
-        $clientId = $client->id;
-
-        $addressModel = new Address();
-        $clientAddressModel = new ClientAddress();
-
-        foreach ($request->input('zip') as $key => $zip) {
-            if (!empty($zip)) {
-                $address = $addressModel->create([
-                    'street' => $request->input("street")[$key],
-                    'number' => $request->input("number")[$key],
-                    'district' => $request->input("district")[$key],
-                    'city' => $request->input("city")[$key],
-                    'state' => $request->input("state")[$key],
-                    'zip_code' => $zip
-                ]);
-
-                $clientAddressModel->create([
-                    'client_id' => $clientId,
-                    'address_id' => $address->id
-                ]);
-            }
-        }
+        $this->handleClientAddresses($client->id, $request);
 
         return View::redirect('/clientes', [
             'success' => true,
-            'success_message' => "Cliente {$name} cadastrado com sucesso!"
+            'success_message' => "Cliente {$clientData['name']} cadastrado com sucesso!"
         ]);
     }
 
@@ -109,76 +81,40 @@ class ClientsController {
         $request = new Request();
         $idClient = $request->input('id');
 
-        if (!$idClient) {
-            return View::redirect('/clientes', [
-                'error' => true,
-                'error_message' => 'ID do cliente não foi informado!'
-            ]);
+        $validationError = $this->validateClientId($idClient);
+        if ($validationError) {
+            return View::redirect('/clientes', $validationError);
         }
 
-        $clientModel = new Client();
-
-        $existingClient = $clientModel->get(['id' => $idClient]);
-
-        if (!$existingClient) {
-            return View::redirect('/clientes', [
-                'error' => true,
-                'error_message' => 'Cliente não encontrado!'
-            ]);
-        }
-
-        $name = $request->input('name');
-        $birth = $request->input('birth');
-        $cpf = $request->input('cpf');
-        $rg = $request->input('rg');
-        $phone = $request->input('phone');
+        $clientData = [
+            'id' => $idClient,
+            'name' => $request->input('name'),
+            'birth' => date('Y-m-d', strtotime(str_replace('/', '-', $request->input('birth')))),
+            'cpf' => $request->input('cpf'),
+            'rg' => $request->input('rg'),
+            'phone' => $request->input('phone')
+        ];
         $addresses = $request->input('zip');
 
-        $clientModel->edit([
-            'id' => $idClient,
-            'name' => $name,
-            'birth' => date('Y-m-d', strtotime(str_replace('/', '-', $birth))),
-            'cpf' => $cpf,
-            'rg' => $rg,
-            'phone' => $phone
-        ]);
-
-        $addressModel = new Address();
-        $clientAddressModel = new ClientAddress();
-        $clientAddressModel->deleteByClientId($idClient);
-        $addressModel->deleteByClientId($idClient);
-
-        foreach ($addresses as $key => $zip) {
-            $newAddress = $addressModel->create([
-                'zip_code' => $zip,
-                'state' => $request->input('state')[$key],
-                'street' => $request->input('street')[$key],
-                'number' => $request->input('number')[$key],
-                'district' => $request->input('district')[$key],
-                'city' => $request->input('city')[$key]
-            ]);
-
-            $clientAddressModel->create([
-                'client_id' => $idClient,
-                'address_id' => $newAddress->id
-            ]);
-        }
+        $this->clientModel->edit($clientData);
+        $this->clientAddressModel->deleteByClientId($idClient);
+        $this->addressModel->deleteByClientId($idClient);
+        $this->handleClientAddresses($idClient, $request);
 
         return View::redirect('/clientes', [
             'success' => true,
-            'success_message' => "Cliente {$name} atualizado com sucesso!"
+            'success_message' => "Cliente {$clientData['name']} atualizado com sucesso!"
         ]);
     }
 
     public function allClients() {
         $request = new Request();
         $start = $request->query('start') ?? 0;
-        $limit = 10; 
-    
-        $clientModel = new Client();
-        $clients = $clientModel->getAllWithAddresses($start, $limit);
-        $totalClients = $clientModel->countClients();
-    
+        $limit = 10;
+
+        $clients = $this->clientModel->getAllWithAddresses($start, $limit);
+        $totalClients = $this->clientModel->countClients();
+
         header('Content-Type: application/json');
         echo json_encode([
             'clients' => $clients,
@@ -189,30 +125,85 @@ class ClientsController {
     public function delete() {
         $request = new Request();
         $clientId = $request->query('id');
-    
+
         if (!$clientId) {
-            header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'ID do cliente não fornecido.']);
-            return;
+            return $this->jsonResponse('error', 'ID do cliente não fornecido.');
         }
-    
-        $clientModel = new Client();
-        $client = $clientModel->get(['id' => $clientId]);
-    
+
+        $client = $this->clientModel->get(['id' => $clientId]);
         if (!$client) {
-            header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Cliente não encontrado.']);
-            return;
+            return $this->jsonResponse('error', 'Cliente não encontrado.');
         }
-    
-        $deleted = $clientModel->delete($clientId);
-    
+
+        $deleted = $this->clientModel->delete($clientId);
+
         if ($deleted) {
-            header('Content-Type: application/json');
-            echo json_encode(['status' => 'success', 'message' => "Cliente {$client['name']} foi removido com sucesso!"]);
+            return $this->jsonResponse('success', "Cliente {$client['name']} foi removido com sucesso!");
         } else {
-            header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Erro ao deletar cliente.']);
+            return $this->jsonResponse('error', 'Erro ao deletar cliente.');
         }
+    }
+
+    private function validateClientFields(array $clientData, array $addresses): ?array {
+        foreach ($clientData as $key => $value) {
+            if (empty($value)) {
+                return [
+                    'error' => true,
+                    'error_message' => 'Preencha todos os campos obrigatórios!'
+                ];
+            }
+        }
+
+        if (empty($addresses[0])) {
+            return [
+                'error' => true,
+                'error_message' => 'O primeiro endereço é obrigatório!'
+            ];
+        }
+
+        return null;
+    }
+
+    private function validateClientId(?string $idClient): ?array {
+        if (!$idClient) {
+            return [
+                'error' => true,
+                'error_message' => 'ID do cliente não foi informado!'
+            ];
+        }
+
+        if (!$this->clientModel->get(['id' => $idClient])) {
+            return [
+                'error' => true,
+                'error_message' => 'Cliente não encontrado!'
+            ];
+        }
+
+        return null;
+    }
+
+    private function handleClientAddresses(int $clientId, Request $request): void {
+        foreach ($request->input('zip') as $key => $zip) {
+            if (!empty($zip)) {
+                $address = $this->addressModel->create([
+                    'zip_code' => $zip,
+                    'state' => $request->input('state')[$key],
+                    'street' => $request->input('street')[$key],
+                    'number' => $request->input('number')[$key],
+                    'district' => $request->input('district')[$key],
+                    'city' => $request->input('city')[$key]
+                ]);
+
+                $this->clientAddressModel->create([
+                    'client_id' => $clientId,
+                    'address_id' => $address->id
+                ]);
+            }
+        }
+    }
+
+    private function jsonResponse(string $status, string $message) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => $status, 'message' => $message]);
     }
 }
