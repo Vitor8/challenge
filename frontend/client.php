@@ -16,6 +16,7 @@
     </style>
 </head>
 <body class="bg-light">
+    <?php require_once __DIR__ . '/includes/logout.php'; ?>
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 500px; background-color: #f8f9fa;">
         <h2 class="text-center mb-4"><?php echo isset($client) ? "Editar Cliente" : "Novo Cliente"; ?></h2>
 

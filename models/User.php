@@ -16,17 +16,17 @@ class User extends BaseModel {
     }
 
     /**
-     * Saves an authentication token for a user with an expiration time.
+     * Saves or removes an authentication token for a user.
      *
      * @param int $userId The ID of the user to associate with the token.
-     * @param string $token The generated authentication token.
+     * @param string|null $token The generated authentication token, or null to remove the token.
      * @return void
      */
-    public function saveToken(int $userId, string $token): void {
+    public function saveToken(int $userId, ?string $token): void {
         $this->edit([
             'id' => $userId,
             'auth_token' => $token,
-            'token_expires_at' => $this->generateTokenExpiration()
+            'token_expires_at' => $token ? $this->generateTokenExpiration() : null
         ]);
     }
 

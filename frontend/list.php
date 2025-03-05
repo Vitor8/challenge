@@ -6,6 +6,9 @@
     <title>Lista de Clientes</title>
 </head>
 <body class="bg-light">
+
+    <?php require_once __DIR__ . '/includes/logout.php'; ?>
+
     <div class="container-fluid mt-4">
         <div class="ms-4">
             <h2 class="mb-3">Lista de Clientes</h2>
@@ -91,7 +94,6 @@
                 }
             });
 
-
             $("#prevPage").click(function() {
                 if (start > 0) {
                     start -= limit;
@@ -103,7 +105,6 @@
                 let clientId = $(this).data("id");
                 window.location.href = `/save?id=${clientId}`;
             });
-
 
             $(document).on("click", ".delete-client", function() {
                 let clientId = $(this).data("id");

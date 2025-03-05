@@ -10,6 +10,7 @@ return [
     '/create' => ['ClientsController', 'create'],
     '/edit' => ['ClientsController', 'edit'],
     '/deleteClient' => ['ClientsController', 'delete'],
-    '/allClients' => ['ClientsController', 'allClients']
+    '/allClients' => ['ClientsController', 'allClients'],
+    '/logout' => ['LoginController', 'logout']
 ];
 

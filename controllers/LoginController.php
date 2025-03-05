@@ -154,4 +154,30 @@ class LoginController {
 
         return null;
     }
+
+    /**
+     * Logs out the authenticated user by invalidating their authentication token.
+     *
+     * This method checks if the user is authenticated via the `auth_token` cookie.
+     * If the user is found in the database, their authentication token is cleared.
+     * The cookie storing the auth token is also deleted.
+     *
+     * @return void Outputs a JSON response indicating success or failure.
+     */
+    public function logout(): void {
+        if (!isset($_COOKIE['auth_token'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Usuário não autenticado.']);
+            return;
+        }
+
+        $user = $this->userModel->get(['auth_token' => $_COOKIE['auth_token']]);
+        if ($user) {
+            $this->userModel->saveToken($user['id'], null);
+        }
+
+        setcookie('auth_token', '', time() - 3600, '/', '', false, true);
+
+        echo json_encode(['status' => 'success', 'message' => 'Logout realizado com sucesso.']);
+    }
+ 
 }
