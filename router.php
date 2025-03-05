@@ -8,7 +8,9 @@ if (file_exists(__DIR__ . "/frontend" . $requestUri)) {
     return false;
 }
 
-AuthMiddleware::checkAuthentication($requestUri);
+$authMiddleware = new AuthMiddleware();
+$authMiddleware->checkAuthentication($requestUri);
+
 $routes = require 'routes.php';
 
 if (array_key_exists($requestUri, $routes)) {

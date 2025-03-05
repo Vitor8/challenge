@@ -3,28 +3,44 @@
 require_once __DIR__ . '/../models/User.php';
 
 class AuthMiddleware {
-    public static function checkAuthentication($route) {
-        $publicRoutes = ['/', '/login', '/cadastrar', '/register'];
+    private User $userModel;
 
-        if (in_array($route, $publicRoutes)) {
+    public function __construct() {
+        $this->userModel = new User();
+    }
+
+    public function checkAuthentication(string $route): void {
+        if ($this->isPublicRoute($route)) {
             return;
         }
 
-        if (!isset($_COOKIE['auth_token'])) {
-            header("Location: /?error=1&error_message=Acesso não autorizado! Faça login.");
-            exit;
+        if (!$this->isAuthenticated()) {
+            $this->redirectWithError("Acesso não autorizado! Faça login.");
         }
 
-        $userModel = new User();
-        $user = $userModel->get([
-            'auth_token' => $_COOKIE['auth_token']
-        ]);
+        $user = $this->userModel->get(['auth_token' => $_COOKIE['auth_token']]);
 
-        if (!$user || strtotime($user['token_expires_at']) < time()) {
+        if (!$this->isTokenValid($user)) {
             setcookie('auth_token', '', time() - 3600, '/', '', false, true);
-            header("Location: /?error=1&error_message=Seu login expirou! Faça login novamente.");
-            exit;
+            $this->redirectWithError("Seu login expirou! Faça login novamente.");
         }
     }
-}
 
+    private function isPublicRoute(string $route): bool {
+        $publicRoutes = ['/', '/login', '/cadastrar', '/register'];
+        return in_array($route, $publicRoutes, true);
+    }
+
+    private function isAuthenticated(): bool {
+        return isset($_COOKIE['auth_token']);
+    }
+
+    private function isTokenValid(?array $user): bool {
+        return $user && strtotime($user['token_expires_at']) > time();
+    }
+
+    private function redirectWithError(string $message): void {
+        header("Location: /?error=1&error_message=" . urlencode($message));
+        exit;
+    }
+}
