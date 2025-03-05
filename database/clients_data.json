@@ -1,0 +1,230 @@
+[
+    {
+        "name": "Lucas Almeida",
+        "birth": "1990-05-15",
+        "cpf": "123.456.789-01",
+        "rg": "12.345.678-9",
+        "phone": "(11) 98765-4321",
+        "addresses": [
+            {
+                "street": "Avenida Paulista",
+                "number": "1000",
+                "district": "Bela Vista",
+                "city": "São Paulo",
+                "state": "SP",
+                "zip_code": "01311-000"
+            }
+        ]
+    },
+    {
+        "name": "Ana Souza",
+        "birth": "1985-10-21",
+        "cpf": "987.654.321-00",
+        "rg": "98.765.432-1",
+        "phone": "(21) 91234-5678",
+        "addresses": [
+            {
+                "street": "Rua das Flores",
+                "number": "500",
+                "district": "Centro",
+                "city": "Rio de Janeiro",
+                "state": "RJ",
+                "zip_code": "20031-040"
+            },
+            {
+                "street": "Avenida Atlântica",
+                "number": "320",
+                "district": "Copacabana",
+                "city": "Rio de Janeiro",
+                "state": "RJ",
+                "zip_code": "22021-000"
+            }
+        ]
+    },
+    {
+        "name": "Carlos Mendes",
+        "birth": "1978-03-12",
+        "cpf": "321.654.987-02",
+        "rg": "32.165.498-7",
+        "phone": "(31) 92345-6789",
+        "addresses": [
+            {
+                "street": "Rua dos Artistas",
+                "number": "220",
+                "district": "Santa Efigênia",
+                "city": "Belo Horizonte",
+                "state": "MG",
+                "zip_code": "30130-030"
+            }
+        ]
+    },
+    {
+        "name": "Fernanda Ribeiro",
+        "birth": "1995-07-08",
+        "cpf": "741.852.963-10",
+        "rg": "74.185.296-3",
+        "phone": "(41) 96547-8921",
+        "addresses": [
+            {
+                "street": "Rua das Palmeiras",
+                "number": "120",
+                "district": "Boa Vista",
+                "city": "Curitiba",
+                "state": "PR",
+                "zip_code": "82560-000"
+            }
+        ]
+    },
+    {
+        "name": "Gabriel Martins",
+        "birth": "1989-12-05",
+        "cpf": "159.753.486-20",
+        "rg": "15.975.348-6",
+        "phone": "(51) 99874-3210",
+        "addresses": [
+            {
+                "street": "Avenida Farrapos",
+                "number": "870",
+                "district": "Floresta",
+                "city": "Porto Alegre",
+                "state": "RS",
+                "zip_code": "90220-001"
+            }
+        ]
+    },
+    {
+        "name": "Juliana Pereira",
+        "birth": "1982-06-30",
+        "cpf": "654.321.987-33",
+        "rg": "65.432.198-7",
+        "phone": "(81) 98765-1234",
+        "addresses": [
+            {
+                "street": "Rua da Aurora",
+                "number": "456",
+                "district": "Boa Vista",
+                "city": "Recife",
+                "state": "PE",
+                "zip_code": "50050-000"
+            }
+        ]
+    },
+    {
+        "name": "Ricardo Nogueira",
+        "birth": "1994-09-18",
+        "cpf": "852.963.741-55",
+        "rg": "85.296.374-1",
+        "phone": "(62) 93456-7812",
+        "addresses": [
+            {
+                "street": "Avenida T-63",
+                "number": "1200",
+                "district": "Setor Bueno",
+                "city": "Goiânia",
+                "state": "GO",
+                "zip_code": "74230-100"
+            },
+            {
+                "street": "Rua 10",
+                "number": "200",
+                "district": "Centro",
+                "city": "Goiânia",
+                "state": "GO",
+                "zip_code": "74030-020"
+            }
+        ]
+    },
+    {
+        "name": "Mariana Castro",
+        "birth": "1991-01-25",
+        "cpf": "951.357.258-99",
+        "rg": "95.135.725-8",
+        "phone": "(98) 97654-2310",
+        "addresses": [
+            {
+                "street": "Avenida Litorânea",
+                "number": "740",
+                "district": "Calhau",
+                "city": "São Luís",
+                "state": "MA",
+                "zip_code": "65076-170"
+            }
+        ]
+    },
+    {
+        "name": "Fernando Lima",
+        "birth": "1987-11-11",
+        "cpf": "258.147.369-77",
+        "rg": "25.814.736-9",
+        "phone": "(92) 98321-6547",
+        "addresses": [
+            {
+                "street": "Rua dos Bancários",
+                "number": "65",
+                "district": "Adrianópolis",
+                "city": "Manaus",
+                "state": "AM",
+                "zip_code": "69057-030"
+            }
+        ]
+    },
+    {
+        "name": "Roberto Silveira",
+        "birth": "1980-07-22",
+        "cpf": "741.852.963-99",
+        "rg": "74.185.296-9",
+        "phone": "(11) 97788-1234",
+        "addresses": [
+            {
+                "street": "Rua da Consolação",
+                "number": "789",
+                "district": "Centro",
+                "city": "São Paulo",
+                "state": "SP",
+                "zip_code": "01302-000"
+            }
+        ]
+    },
+    {
+        "name": "Cláudia Mendes",
+        "birth": "1992-03-14",
+        "cpf": "963.258.741-22",
+        "rg": "96.325.874-1",
+        "phone": "(21) 99887-6543",
+        "addresses": [
+            {
+                "street": "Rua Jardim Botânico",
+                "number": "150",
+                "district": "Jardim Botânico",
+                "city": "Rio de Janeiro",
+                "state": "RJ",
+                "zip_code": "22460-030"
+            }
+        ]
+    },
+    {
+        "name": "Eduardo Fernandes",
+        "birth": "1985-11-30",
+        "cpf": "852.741.963-55",
+        "rg": "85.274.196-3",
+        "phone": "(41) 96547-7895",
+        "addresses": [
+            {
+                "street": "Rua XV de Novembro",
+                "number": "2500",
+                "district": "Centro",
+                "city": "Curitiba",
+                "state": "PR",
+                "zip_code": "80020-310"
+            },
+            {
+                "street": "Rua das Camélias",
+                "number": "321",
+                "district": "Juvevê",
+                "city": "Curitiba",
+                "state": "PR",
+                "zip_code": "80040-010"
+            }
+        ]
+    }
+]
