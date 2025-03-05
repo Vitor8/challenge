@@ -3,14 +3,17 @@
 require_once __DIR__ . '/../core/DB.php';
 
 /**
- * BaseModel provides common database operations for all models.
+ * BaseModel provides generic database operations for all models.
+ * It serves as the parent class for specific entity models.
  */
 class BaseModel {
     protected PDO $pdo;
     protected string $table;
 
     /**
-     * Constructor to initialize database connection and table name.
+     * Initializes the database connection and sets the table name.
+     *
+     * @param string $table The name of the database table associated with the model.
      */
     public function __construct(string $table) {
         $this->pdo = DB::getConnection();
@@ -18,7 +21,10 @@ class BaseModel {
     }
 
     /**
-     * Retrieves a single record based on given conditions.
+     * Retrieves a single record based on specified conditions.
+     *
+     * @param array $conditions Key-value pairs for filtering the query.
+     * @return array|null The retrieved record as an associative array, or null if not found.
      */
     public function get(array $conditions = []): ?array {
         $sql = "SELECT * FROM {$this->table}";
@@ -37,6 +43,9 @@ class BaseModel {
 
     /**
      * Inserts a new record into the table.
+     *
+     * @param array $data An associative array of column-value pairs to insert.
+     * @return object|null Returns an object containing the inserted record ID, or null on failure.
      */
     public function create(array $data): ?object {
         $columns = implode(", ", array_keys($data));
@@ -50,6 +59,9 @@ class BaseModel {
 
     /**
      * Deletes records matching the given conditions.
+     *
+     * @param array $conditions Key-value pairs specifying the records to delete.
+     * @return bool Returns true if the operation was successful, false otherwise.
      */
     public function delete(array $conditions): bool {
         if (empty($conditions)) {
@@ -65,6 +77,10 @@ class BaseModel {
 
     /**
      * Updates an existing record based on the provided data.
+     *
+     * @param array $data An associative array containing the updated data.
+     *                   The 'id' key is required to specify which record to update.
+     * @return bool Returns true if the update was successful, false otherwise.
      */
     public function edit(array $data): bool {
         if (!isset($data['id'])) {

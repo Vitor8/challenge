@@ -5,8 +5,16 @@ require_once __DIR__ . '/../env.php';
 class DB {
     private static ?PDO $pdo = null;
 
+    /**
+     * Private constructor to prevent direct instantiation.
+     */
     private function __construct() {}
 
+    /**
+     * Returns an active database connection. If not established, initializes a new one.
+     *
+     * @return PDO The database connection instance.
+     */
     public static function getConnection(): PDO {
         if (self::$pdo === null) {
             self::initializeConnection();
@@ -14,6 +22,12 @@ class DB {
         return self::$pdo;
     }
 
+    /**
+     * Establishes a database connection without selecting a specific database.
+     * Useful for dynamically creating databases.
+     *
+     * @return PDO A new database connection instance without a selected database.
+     */
     public static function getConnectionWithoutDB(): PDO {
         return new PDO(
             "mysql:host=" . getenv('DB_HOST') . ";charset=utf8",
@@ -23,11 +37,21 @@ class DB {
         );
     }
 
+    /**
+     * Resets the database connection, forcing a new one to be established.
+     *
+     * @return void
+     */
     public static function resetConnection(): void {
         self::$pdo = null;
         self::initializeConnection();
     }
 
+    /**
+     * Initializes the database connection using environment variables.
+     *
+     * @return void
+     */
     private static function initializeConnection(): void {
         $host = getenv('DB_HOST');
         $dbname = getenv('DB_NAME');

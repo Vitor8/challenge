@@ -7,10 +7,18 @@ require_once __DIR__ . '/../models/User.php';
 class LoginController {
     private User $userModel;
 
+    /**
+     * Initializes the LoginController with the User model.
+     */
     public function __construct() {
         $this->userModel = new User();
     }
 
+    /**
+     * Displays the login page.
+     *
+     * @return string The rendered login view.
+     */
     public function home(): string {
         $request = new Request();
 
@@ -20,31 +28,43 @@ class LoginController {
         ]);
     }
 
-    public function login() {
+    /**
+     * Handles user authentication.
+     *
+     * @return void Redirects to the client list if successful, otherwise returns an error.
+     */
+    public function login(): void {
         $request = new Request();
         $login = $request->input('login');
         $password = $request->input('password');
 
         $validationError = $this->validateLoginFields($login, $password);
         if ($validationError) {
-            return View::redirect('/', $validationError);
+            View::redirect('/', $validationError);
+            return;
         }
 
-        $usuario = $this->userModel->get(['login' => $login]);
-        if (!$usuario || !password_verify($password, $usuario['password'])) {
-            return View::redirect('/', [
+        $user = $this->userModel->get(['login' => $login]);
+        if (!$user || !password_verify($password, $user['password'])) {
+            View::redirect('/', [
                 'error' => true,
-                'error_message' => 'Usuário ou senha incorretos!'
+                'error_message' => 'Incorrect username or password!'
             ]);
+            return;
         }
 
         $token = bin2hex(random_bytes(32));
         setcookie('auth_token', $token, time() + 3600, '/', '', false, true);
-        $this->userModel->saveToken($usuario['id'], $token);
+        $this->userModel->saveToken($user['id'], $token);
 
-        return View::redirect('/clientes');
+        View::redirect('/clientes');
     }
 
+    /**
+     * Displays the user registration page.
+     *
+     * @return string The rendered registration view.
+     */
     public function registerView(): string {
         $request = new Request();
 
@@ -54,7 +74,12 @@ class LoginController {
         ]);
     }
 
-    public function register() {
+    /**
+     * Handles user registration.
+     *
+     * @return void Redirects to the login page with a success message, or an error if registration fails.
+     */
+    public function register(): void {
         $request = new Request();
         $login = $request->input('login');
         $password = $request->input('password');
@@ -62,15 +87,17 @@ class LoginController {
 
         $validationError = $this->validateRegisterFields($login, $password, $confirmPassword);
         if ($validationError) {
-            return View::redirect('/cadastrar', $validationError);
+            View::redirect('/cadastrar', $validationError);
+            return;
         }
 
         $existingUser = $this->userModel->get(['login' => $login]);
         if ($existingUser) {
-            return View::redirect('/cadastrar', [
+            View::redirect('/cadastrar', [
                 'error' => true,
-                'error_message' => 'Já existe um usuário com esse nome. Cadastre outro!'
+                'error_message' => 'A user with this username already exists. Please choose another one!'
             ]);
+            return;
         }
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -79,34 +106,49 @@ class LoginController {
             'password' => $hashedPassword
         ]);
 
-        return View::redirect('/', [
+        View::redirect('/', [
             'success' => true,
-            'success_message' => 'Usuário cadastrado com sucesso!'
+            'success_message' => 'User successfully registered!'
         ]);
     }
 
+    /**
+     * Validates login fields before authentication.
+     *
+     * @param string|null $login The username entered by the user.
+     * @param string|null $password The password entered by the user.
+     * @return array|null An error message array if validation fails, otherwise null.
+     */
     private function validateLoginFields(?string $login, ?string $password): ?array {
         if (empty($login) || empty($password)) {
             return [
                 'error' => true,
-                'error_message' => 'Preencha todos os campos!'
+                'error_message' => 'Fill in all required fields!'
             ];
         }
         return null;
     }
 
+    /**
+     * Validates registration fields before creating a new user.
+     *
+     * @param string|null $login The username entered by the user.
+     * @param string|null $password The password entered by the user.
+     * @param string|null $confirmPassword The password confirmation entered by the user.
+     * @return array|null An error message array if validation fails, otherwise null.
+     */
     private function validateRegisterFields(?string $login, ?string $password, ?string $confirmPassword): ?array {
         if (empty($login) || empty($password) || empty($confirmPassword)) {
             return [
                 'error' => true,
-                'error_message' => 'Preencha todos os campos!'
+                'error_message' => 'Fill in all required fields!'
             ];
         }
 
         if ($password !== $confirmPassword) {
             return [
                 'error' => true,
-                'error_message' => 'As senhas não coincidem!'
+                'error_message' => 'Passwords do not match!'
             ];
         }
 

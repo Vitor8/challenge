@@ -2,13 +2,23 @@
 
 require_once __DIR__ . '/BaseModel.php';
 
+/**
+ * Address Model - Manages database operations related to addresses.
+ */
 class Address extends BaseModel {
+    
+    /**
+     * Initializes the Address model with the associated database table.
+     */
     public function __construct() {
         parent::__construct('addresses');
     }
 
     /**
-     * Deletes all addresses related to a specific client.
+     * Deletes all addresses associated with a specific client.
+     *
+     * @param int $clientId The ID of the client whose addresses should be deleted.
+     * @return bool Returns true if the operation was successful, false otherwise.
      */
     public function deleteByClientId(int $clientId): bool {
         try {
@@ -18,12 +28,16 @@ class Address extends BaseModel {
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute(['client_id' => $clientId]);
         } catch (PDOException $e) {
+            error_log("Error deleting addresses for client ID $clientId: " . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * Retrieves addresses by an array of address IDs.
+     * Retrieves multiple addresses based on an array of address IDs.
+     *
+     * @param array $addressIds An array of address IDs to retrieve.
+     * @return array Returns an array of address records or an empty array if no records are found.
      */
     public function getAddressesByIds(array $addressIds): array {
         if (empty($addressIds)) {
@@ -38,6 +52,7 @@ class Address extends BaseModel {
             $stmt->execute($addressIds);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            error_log("Error retrieving addresses: " . $e->getMessage());
             return [];
         }
     }

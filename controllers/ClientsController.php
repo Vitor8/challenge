@@ -11,6 +11,9 @@ class ClientsController {
     private Address $addressModel;
     private ClientAddress $clientAddressModel;
 
+    /**
+     * Initializes the ClientsController with required models.
+     */
     public function __construct() {
         $this->clientModel = new Client();
         $this->addressModel = new Address();
@@ -18,14 +21,18 @@ class ClientsController {
     }
 
     /**
-     * Displays the list of clients.
+     * Displays the client list page.
+     *
+     * @return string The rendered HTML view.
      */
     public function list(): string {
         return View::make('list', ['request' => new Request()]);
     }
 
     /**
-     * Loads the client creation/editing form.
+     * Displays the client creation/editing form.
+     *
+     * @return string The rendered HTML view.
      */
     public function save(): string {
         $request = new Request();
@@ -50,9 +57,11 @@ class ClientsController {
     }
 
     /**
-     * Handles the creation of a new client.
+     * Creates a new client and their associated addresses.
+     *
+     * @return void Redirects to the client list view with a success message.
      */
-    public function create() {
+    public function create(): void {
         $request = new Request();
         $clientData = [
             'name' => $request->input('name'),
@@ -65,14 +74,16 @@ class ClientsController {
 
         $validationError = $this->validateClientFields($clientData, $addresses);
         if ($validationError) {
-            return View::redirect('/save', $validationError);
+            View::redirect('/save', $validationError);
+            return;
         }
 
         if ($this->clientModel->get(['cpf' => $clientData['cpf']]) || $this->clientModel->get(['rg' => $clientData['rg']])) {
-            return View::redirect('/save', [
+            View::redirect('/save', [
                 'error' => true,
-                'error_message' => 'A user with this RG or CPF already exists!'
+                'error_message' => 'Já existe um usuário com este RG ou CPF cadastrados!'
             ]);
+            return;
         }
 
         $clientData['birth'] = DateTime::createFromFormat('d/m/Y', $clientData['birth'])->format('Y-m-d');
@@ -80,22 +91,25 @@ class ClientsController {
 
         $this->handleClientAddresses($client->id, $request);
 
-        return View::redirect('/clientes', [
+        View::redirect('/clientes', [
             'success' => true,
-            'success_message' => "Client {$clientData['name']} successfully registered!"
+            'success_message' => "Cliente {$clientData['name']} cadastrado com sucesso!"
         ]);
     }
 
     /**
-     * Handles client editing.
+     * Edits an existing client and updates their addresses.
+     *
+     * @return void Redirects to the client list view with a success message.
      */
-    public function edit() {
+    public function edit(): void {
         $request = new Request();
         $idClient = $request->input('id');
 
         $validationError = $this->validateClientId($idClient);
         if ($validationError) {
-            return View::redirect('/clientes', $validationError);
+            View::redirect('/clientes', $validationError);
+            return;
         }
 
         $clientData = [
@@ -113,16 +127,18 @@ class ClientsController {
         $this->addressModel->deleteByClientId($idClient);
         $this->handleClientAddresses($idClient, $request);
 
-        return View::redirect('/clientes', [
+        View::redirect('/clientes', [
             'success' => true,
-            'success_message' => "Client {$clientData['name']} successfully updated!"
+            'success_message' => "Cliente {$clientData['name']} atualizado com sucesso!"
         ]);
     }
 
     /**
-     * Returns a JSON response with all paginated clients.
+     * Retrieves all clients with their addresses in JSON format.
+     *
+     * @return void Outputs JSON response.
      */
-    public function allClients() {
+    public function allClients(): void {
         $request = new Request();
         $start = $request->query('start') ?? 0;
         $limit = 10;
@@ -138,39 +154,47 @@ class ClientsController {
     }
 
     /**
-     * Handles client deletion.
+     * Deletes a client from the database.
+     *
+     * @return void Outputs JSON response.
      */
-    public function delete() {
+    public function delete(): void {
         $request = new Request();
         $clientId = $request->query('id');
 
         if (!$clientId) {
-            return $this->jsonResponse('error', 'Client ID not provided.');
+            $this->jsonResponse('error', 'ID do cliente não fornecido.');
+            return;
         }
 
         $client = $this->clientModel->get(['id' => $clientId]);
         if (!$client) {
-            return $this->jsonResponse('error', 'Client not found.');
+            $this->jsonResponse('error', 'Cliente não encontrado.');
+            return;
         }
 
         $deleted = $this->clientModel->deleteClient($clientId);
 
         if ($deleted) {
-            return $this->jsonResponse('success', "Client {$client['name']} successfully removed!");
+            $this->jsonResponse('success', "Cliente {$client['name']} foi removido com sucesso!");
         } else {
-            return $this->jsonResponse('error', 'Error deleting client.');
+            $this->jsonResponse('error', 'Erro ao deletar cliente.');
         }
     }
 
     /**
-     * Validates client fields before saving.
+     * Validates client fields and addresses.
+     *
+     * @param array $clientData Client data.
+     * @param array $addresses List of addresses.
+     * @return array|null Validation error message or null if valid.
      */
     private function validateClientFields(array $clientData, array $addresses): ?array {
         foreach ($clientData as $key => $value) {
             if (empty($value)) {
                 return [
                     'error' => true,
-                    'error_message' => 'Fill in all required fields!'
+                    'error_message' => 'Preencha todos os campos obrigatórios!'
                 ];
             }
         }
@@ -178,7 +202,7 @@ class ClientsController {
         if (empty($addresses[0])) {
             return [
                 'error' => true,
-                'error_message' => 'The first address is required!'
+                'error_message' => 'O primeiro endereço é obrigatório!'
             ];
         }
 
@@ -186,20 +210,23 @@ class ClientsController {
     }
 
     /**
-     * Validates client ID before updating or deleting.
+     * Validates the client ID.
+     *
+     * @param string|null $idClient The client ID.
+     * @return array|null Validation error message or null if valid.
      */
     private function validateClientId(?string $idClient): ?array {
         if (!$idClient) {
             return [
                 'error' => true,
-                'error_message' => 'Client ID was not provided!'
+                'error_message' => 'ID do cliente não foi informado!'
             ];
         }
 
         if (!$this->clientModel->get(['id' => $idClient])) {
             return [
                 'error' => true,
-                'error_message' => 'Client not found!'
+                'error_message' => 'Cliente não encontrado!'
             ];
         }
 
@@ -207,7 +234,11 @@ class ClientsController {
     }
 
     /**
-     * Handles storing client addresses.
+     * Handles client address creation.
+     *
+     * @param int $clientId The client ID.
+     * @param Request $request The request object.
+     * @return void
      */
     private function handleClientAddresses(int $clientId, Request $request): void {
         foreach ($request->input('zip') as $key => $zip) {
