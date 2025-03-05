@@ -135,7 +135,7 @@ class ClientsController {
             return $this->jsonResponse('error', 'Cliente não encontrado.');
         }
 
-        $deleted = $this->clientModel->delete($clientId);
+        $deleted = $this->clientModel->deleteClient($clientId);
 
         if ($deleted) {
             return $this->jsonResponse('success', "Cliente {$client['name']} foi removido com sucesso!");
