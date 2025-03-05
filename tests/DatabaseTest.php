@@ -3,36 +3,52 @@
 require_once __DIR__ . '/../core/DB.php';
 
 class DatabaseTest {
-    private $pdo;
+    private PDO $pdo;
+    private const REQUIRED_TABLES = ['migrations', 'usuarios', 'clients', 'addresses', 'client_address'];
 
     public function __construct() {
-        try {
-            $this->pdo = DB::getConnection();
-            echo "[✅] Conexão com o banco de dados foi bem-sucedida.\n";
-        } catch (PDOException $e) {
-            echo "[❌] Erro na conexão com MySQL: " . $e->getMessage() . "\n";
-            exit(1);
-        }
-
-        $this->checkTableExists('migrations');
-        $this->checkTableExists('usuarios');
-        $this->checkTableExists('clients');
-        $this->checkTableExists('addresses');
-        $this->checkTableExists('client_address');
+        $this->connectToDatabase();
+        $this->checkRequiredTables();
     }
 
-    private function checkTableExists($tableName) {
+    /**
+     * Establishes a connection to the database.
+     */
+    private function connectToDatabase(): void {
+        try {
+            $this->pdo = DB::getConnection();
+            echo "[✅] Successfully connected to the database.\n";
+        } catch (PDOException $e) {
+            echo "[❌] MySQL connection error: " . $e->getMessage() . "\n";
+            exit(1);
+        }
+    }
+
+    /**
+     * Checks if all required tables exist in the database.
+     */
+    private function checkRequiredTables(): void {
+        foreach (self::REQUIRED_TABLES as $table) {
+            $this->checkTableExists($table);
+        }
+    }
+
+    /**
+     * Verifies whether a specific table exists in the database.
+     */
+    private function checkTableExists(string $tableName): void {
         $stmt = $this->pdo->prepare("SHOW TABLES LIKE :tableName");
         $stmt->execute(['tableName' => $tableName]);
         $tableExists = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($tableExists) {
-            echo "[✅] Tabela '$tableName' encontrada.\n";
+            echo "[✅] Table '$tableName' found.\n";
         } else {
-            echo "[❌] Tabela '$tableName' NÃO encontrada!\n";
+            echo "[❌] Table '$tableName' NOT found!\n";
             exit(1);
         }
     }
 }
 
+// Run database tests
 new DatabaseTest();
