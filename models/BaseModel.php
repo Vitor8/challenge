@@ -22,7 +22,9 @@ class BaseModel {
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($conditions);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result ?: null; 
     }
 
     public function create($data) {

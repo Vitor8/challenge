@@ -1,43 +1,79 @@
 <?php
+
 require_once __DIR__ . '/../core/DB.php';
 
-try {
-    $pdo = DB::getConnection();
+class MigrationRunner {
+    private PDO $pdo;
 
-    $stmt = $pdo->query("SELECT migration_name FROM migrations");
-    $executedMigrations = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    public function __construct() {
+        $this->pdo = DB::getConnection();
+    }
 
-    $migrationFiles = glob(__DIR__ . '/migrations/*.php');
+    /**
+     * Runs all pending migrations
+     */
+    public function runMigrations(): void {
+        try {
+            $executedMigrations = $this->getExecutedMigrations();
+            $migrationFiles = glob(__DIR__ . '/migrations/*.php');
 
-    foreach ($migrationFiles as $migrationFile) {
-        $migrationName = basename($migrationFile, '.php');
+            foreach ($migrationFiles as $migrationFile) {
+                $migrationName = basename($migrationFile, '.php');
 
-        if (!in_array($migrationName, $executedMigrations)) {
-            require_once $migrationFile;
-
-            $className = getMigrationClassName($migrationFile);
-
-            if ($className && class_exists($className)) {
-                $migrationInstance = new $className();
-                $migrationInstance->up();
-
-                $stmt = $pdo->prepare("INSERT INTO migrations (migration_name) VALUES (:migration_name)");
-                $stmt->execute(['migration_name' => $migrationName]);
-
-                echo "✅ Migration '$migrationName' executada com sucesso!\n";
-            } else {
-                echo "⚠️ Classe da migration não encontrada em '$migrationFile'.\n";
+                if (!in_array($migrationName, $executedMigrations)) {
+                    $this->executeMigration($migrationFile, $migrationName);
+                }
             }
+        } catch (PDOException $e) {
+            die("❌ Error executing migrations: " . $e->getMessage() . "\n");
         }
     }
-} catch (PDOException $e) {
-    die("❌ Erro ao executar as migrations: " . $e->getMessage() . "\n");
+
+    /**
+     * Retrieves the list of already executed migrations
+     */
+    private function getExecutedMigrations(): array {
+        $stmt = $this->pdo->query("SELECT migration_name FROM migrations");
+        return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    }
+
+    /**
+     * Executes a specific migration
+     */
+    private function executeMigration(string $migrationFile, string $migrationName): void {
+        require_once $migrationFile;
+        $className = $this->getMigrationClassName($migrationFile);
+
+        if ($className && class_exists($className)) {
+            $migrationInstance = new $className();
+            $migrationInstance->up();
+            $this->registerMigration($migrationName);
+            echo "✅ Migration '$migrationName' executed successfully.\n";
+        } else {
+            echo "⚠️ Migration class not found in '$migrationFile'.\n";
+        }
+    }
+
+    /**
+     * Registers the migration as executed in the database
+     */
+    private function registerMigration(string $migrationName): void {
+        $stmt = $this->pdo->prepare("INSERT INTO migrations (migration_name) VALUES (:migration_name)");
+        $stmt->execute(['migration_name' => $migrationName]);
+    }
+
+    /**
+     * Extracts the class name from a migration file by analyzing its content
+     */
+    private function getMigrationClassName(string $filePath): ?string {
+        $content = file_get_contents($filePath);
+        if (preg_match('/class\s+([a-zA-Z0-9_]+)\s+/', $content, $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
 }
 
-function getMigrationClassName($filePath) {
-    $content = file_get_contents($filePath);
-    if (preg_match('/class\s+([a-zA-Z0-9_]+)\s+/', $content, $matches)) {
-        return $matches[1];
-    }
-    return null;
-}
+// Execute all migrations
+$migrationRunner = new MigrationRunner();
+$migrationRunner->runMigrations();

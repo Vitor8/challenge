@@ -1,20 +1,22 @@
 <?php
-    require_once __DIR__ . '/../env.php';
 
-    $host = getenv('DB_HOST');
-    $user = getenv('DB_USER');
-    $pass = getenv('DB_PASS');
-    $dbname = getenv('DB_NAME');
+require_once __DIR__ . '/../core/DB.php';
 
-    try {
-        $pdo = new PDO("mysql:host=$host;charset=utf8", $user, $pass);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+class DatabaseSetup {
+    public static function createDatabase(): void {
+        $pdo = DB::getConnectionWithoutDB();
+        $dbName = getenv('DB_NAME');
 
-        $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
-        $pdo->exec($sql);
+        try {
+            $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+            echo "✅ Database '$dbName' has been created or already exists.\n";
 
-        echo "Banco de dados '$dbname' criado ou já existe!.\n";
-    } catch (PDOException $e) {
-        die("Erro na criação do banco de dados: " . $e->getMessage());
+            DB::resetConnection();
+        } catch (PDOException $e) {
+            die("❌ Error creating the database: " . $e->getMessage() . "\n");
+        }
     }
-?>
+}
+
+// Execute database creation
+DatabaseSetup::createDatabase();

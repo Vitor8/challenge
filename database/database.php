@@ -2,11 +2,19 @@
 
 require_once __DIR__ . '/../core/DB.php';
 
-try {
-    $pdo = DB::getConnection();
-    if (php_sapi_name() === "cli") { 
-        fwrite(STDOUT, "Conexão com o banco de dados '" . getenv('DB_NAME') . "' foi bem-sucedida!\n");
+class DatabaseChecker {
+    public static function checkConnection(): void {
+        try {
+            $pdo = DB::getConnection();
+            $dbName = getenv('DB_NAME');
+
+            if (php_sapi_name() === "cli") {
+                fwrite(STDOUT, "✅ Successfully connected to the database '$dbName'.\n");
+            }
+        } catch (PDOException $e) {
+            die("❌ Database connection error: " . $e->getMessage() . "\n");
+        }
     }
-} catch (PDOException $e) {
-    die("Erro na conexão: " . $e->getMessage());
 }
+
+DatabaseChecker::checkConnection();

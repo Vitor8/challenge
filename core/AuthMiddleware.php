@@ -20,7 +20,7 @@ class AuthMiddleware {
 
         $user = $this->userModel->get(['auth_token' => $_COOKIE['auth_token']]);
 
-        if (!$this->isTokenValid($user)) {
+        if (!$user || !$this->isTokenValid($user)) {
             setcookie('auth_token', '', time() - 3600, '/', '', false, true);
             $this->redirectWithError("Seu login expirou! Faça login novamente.");
         }
