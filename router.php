@@ -40,9 +40,14 @@ class Router {
      */
     private function serveStaticFiles(string $requestUri): bool {
         $filePath = __DIR__ . "/frontend" . $requestUri;
-        if (file_exists($filePath)) {
-            return false;
+    
+        if (file_exists($filePath) && is_file($filePath)) {
+            $mimeType = mime_content_type($filePath);
+            header("Content-Type: $mimeType");
+            readfile($filePath);
+            return true;
         }
+    
         return false;
     }
 
